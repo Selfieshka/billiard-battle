@@ -1,4 +1,4 @@
-package ru.kpfu.itis.kirillakhmetov.billiardbattle;
+package ru.kpfu.itis.kirillakhmetov.billiardbattle.scene;
 
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.MyApp;
 
 import java.util.Optional;
 
@@ -35,37 +36,37 @@ public class MenuScene {
         logout.setLayoutX(100);
         logout.setLayoutY(250 + 75 + 75 + 75 + 75);
         group.getChildren().addAll(imageView, gameButton, exitbutton, logout);
-//        gameButton.setOnAction(e -> {
-//            Main.outToServer.println("active#" + GameScene.getPlayer1().getName());
-//        });
+        gameButton.setOnAction(e -> {
+            MyApp.outToServer.println("active#" + GameScene2.getPlayer1().getName());
+        });
         exitbutton.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Exit?");
             alert.setHeaderText("Confirmation Dialog");
             alert.setContentText("Sure you want to exit the game?");
             Optional<ButtonType> result = alert.showAndWait();
-//            if (result.get() == ButtonType.OK) {
-//                Application.outToServer.println("logout");
-//                window.close();
-//                try {
-//                    Application.outToServer.close();
-//                    Application.inFromServer.close();
-//                    Application.clientSocket.close();
-//                } catch (Exception e1) {
-//
-//                }
-//                System.exit(0);
-//            }
+            if (result.get() == ButtonType.OK) {
+                MyApp.outToServer.println("logout");
+                window.close();
+                try {
+                    MyApp.outToServer.close();
+                    MyApp.inFromServer.close();
+                    MyApp.clientSocket.close();
+                } catch (Exception e1) {
+
+                }
+                System.exit(0);
+            }
         });
 //        profileButton.setOnAction(e -> {
-//            Main.outToServer.println("profile#" + GameScene.getPlayer1().getName());
+//            MyApp.outToServer.println("profile#" + GameScene.getPlayer1().getName());
 //        });
 //        leaderboardButton.setOnAction(e -> {
 //            Main.outToServer.println("leaderboard");
 //        });
-//        logout.setOnAction(event -> {
-//            Main.outToServer.println("logout");
-//            window.setScene(Main.login);
-//        });
+        logout.setOnAction(event -> {
+            MyApp.outToServer.println("logout");
+            window.setScene(MyApp.login);
+        });
     }
 }

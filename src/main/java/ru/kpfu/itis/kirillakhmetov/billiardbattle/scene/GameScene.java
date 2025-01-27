@@ -10,38 +10,36 @@
 //import javafx.scene.control.Button;
 //import javafx.scene.control.ButtonType;
 //import javafx.scene.control.Label;
-//import javafx.scene.image.Image;
 //import javafx.scene.image.ImageView;
 //import javafx.scene.input.KeyEvent;
 //import javafx.scene.input.MouseEvent;
 //import javafx.stage.Stage;
 //import javafx.util.Duration;
+//import lombok.Data;
 //import ru.kpfu.itis.kirillakhmetov.billiardbattle.controller.BilliardTableController;
-//import ru.kpfu.itis.kirillakhmetov.billiardbattle.entity.Ball;
-//import ru.kpfu.itis.kirillakhmetov.billiardbattle.entity.Player;
-//import ru.kpfu.itis.kirillakhmetov.billiardbattle.entity.Vector;
+//import ru.kpfu.itis.kirillakhmetov.billiardbattle.entity.*;
 //
 //import java.io.BufferedReader;
 //import java.io.PrintWriter;
 //import java.util.ArrayList;
 //import java.util.Optional;
 //
-//
-//public class GameScene2 {
+//@Data
+//public class GameScene {
 //    private Group group;
 //    private Scene scene, menu;
 //    private Parent root;
-//    static Ball ball[];
-//    private static Player player1, player2;
+//    public static Ball[] ball;
+//    private static Player2 player1, player2;
 //    private static int turnNum = 1;
 //    private static boolean isTurn;
 //    private boolean isFoul;
 //    private static boolean gameOver;
 //    private double stack_y = 605;
-//    private int flag2 = 0;//for turn change
-//    private int flag3 = 0; //for foul check
-//    private int flg = 0; //for other type ball collision foul check
-//    private int flagg = 1; // for no ball hit foul check
+//    private boolean turnChangeFlag;
+//    private boolean foulCheckFlag; //for foul check
+//    private boolean ballCollisionFoulCheckFlag; //for other type ball collision foul check
+//    private boolean noBallHitFoulCheck = true; // for no ball hit foul check
 //    private ArrayList<Integer> thisTurnPottedBalls;
 //    private static Label label = new Label(); //Label for the turn change
 //    private Label label1 = new Label(); //label for ball type stripes or solids
@@ -68,8 +66,7 @@
 //    private static int bet;
 //    private BilliardTableController controller;
 //
-//    public GameScene2(Group group, Scene scene, Scene menu, Parent root, Stage window, BilliardTableController controller) throws Exception {
-//        ball = new Ball[16];
+//    public GameScene(Group group, Scene scene, Scene menu, Parent root, Stage window, BilliardTableController controller) throws Exception {
 //        this.outToServer = outToServer;
 //        this.inFromServer = inFromServer;
 //        this.window = window;
@@ -77,65 +74,23 @@
 //        this.menu = menu;
 //        this.root = root;
 //        this.controller = controller;
-//        player1label = new Label();
-//        player2Label = new Label();
-//        player1label.setLayoutX(240);
-//        player1label.setLayoutY(10);
-//        player2Label.setLayoutX(760);
-//        player2Label.setLayoutY(10);
-//        player1label.getStyleClass().add("label-player2");
-//        player2Label.getStyleClass().add("label-player2");
-//        group.getChildren().addAll(player1label, player2Label);
-//        player1 = new Player("");
-//        player2 = new Player("");
-//        imageView1 = new ImageView();
-//        imageView2 = new ImageView();
-//        imageView1.setLayoutX(100);
-//        imageView1.setLayoutY(0);
-//        imageView2.setLayoutX(880);
-//        imageView2.setLayoutY(0);
-//        imageView1.setFitWidth(122);
-//        imageView2.setFitWidth(122);
-//        imageView1.setFitHeight(122);
-//        imageView2.setFitHeight(122);
-//        imageView1.setImage(new Image("sample/Default Profile Pictures/4860042536_a85b1c2745.jpg"));
-//        imageView2.setImage(new Image("sample/Default Profile Pictures/images.jpg"));
-//        //Parent root = FXMLLoader.load (getClass ().getResource ("sample.fxml"));
-//
-//        group.getChildren().addAll(root, imageView1, imageView2);
 //        this.scene = scene;
-//        scene.getStylesheets().add("Viper.css");
-//        //Creating Balls
-//        ball[4] = new Ball(865, 325, "\\Ball Images\\4.png", null, 4);
-//        ball[12] = new Ball(865, 350, "\\Ball Images\\12.png", 2, 12);
-//        ball[3] = new Ball(865, 375, "\\Ball Images\\3.png", 1, 3);
-//        ball[9] = new Ball(865, 400, "\\Ball Images\\9.png", 2, 9);
-//        ball[7] = new Ball(865, 425, "\\Ball Images\\7.png", 1, 7);
 //
-//        ball[1] = new Ball(841, 338, "\\Ball Images\\1.png", 1, 1);
-//        ball[15] = new Ball(841, 363, "\\Ball Images\\15.png", 2, 15);
-//        ball[2] = new Ball(841, 388, "\\Ball Images\\2.png", 1, 2);
-//        ball[5] = new Ball(841, 413, "\\Ball Images\\5.png", 1, 5);
+//        player1 = new Player2();
+//        player2 = new Player2();
+//        ball = new Ball[16];
 //
-//        ball[14] = new Ball(817, 350, "\\Ball Images\\14.png", 2, 14);
-//        ball[8] = new Ball(817, 375, "\\Ball Images\\8.png", 3, 8);
-//        ball[10] = new Ball(817, 400, "\\Ball Images\\10.png", 2, 10);
+//        drawPlayersLabel();
+//        group.getChildren().addAll(root);
 //
-//        ball[11] = new Ball(793, 363, "\\Ball Images\\11.png", 2, 11);
-//        ball[6] = new Ball(793, 388, "\\Ball Images\\6.png", 1, 6);
+//        scene.getStylesheets().add(String.valueOf(getClass().getResource("/ru/kpfu/itis/kirillakhmetov/billiardbattle/menu.css")));
 //
-//        ball[13] = new Ball(769, 375, "\\Ball Images\\13.png", 2, 13);
+//        initializeBalls();
 //
-//        ball[0] = new Ball(346, 375, "\\Ball Images\\0.png", 0, 0);
-//        //Adding them to group
-//        for (int i = 0; i < 16; i++) {
-//            group.getChildren().add(ball[i].drawBall());
-//        }
 //        thisTurnPottedBalls = new ArrayList<>();
 //        player1.setMyTurn(true);
-//        isFoul = false;
-//        gameOver = false;
 //        isTurn = true;
+//
 //        label.setLayoutX(462);
 //        label.setLayoutY(81);
 //        label.setText(player1.getName() + " Is Breaking");
@@ -145,24 +100,15 @@
 //        label7.setText("FOUL!!");
 //        label7.getStyleClass().add("label-player");
 //        group.getChildren().add(label);
-//        for (int i = 0; i < 16; i++) {
-//            potted[i] = false;
-//        }
-////        SoundEffects.init();
-////        SoundEffects.volume = SoundEffects.Volume.LOW;
-//        TurnOffSounds = false;
+//
+/// /        SoundEffects.init();
+/// /        SoundEffects.volume = SoundEffects.Volume.LOW;
 //        group.getChildren().addAll(label1, label2, label3);
 //        group.getChildren().addAll(label4, label5, label6, label7);
-//        label1.setVisible(false);
-//        label2.setVisible(false);
-//        label3.setVisible(false);
-//        label4.setVisible(false);
-//        label5.setVisible(false);
-//        label6.setVisible(false);
-//        label7.setVisible(false);
+//
 //        for (int i = 0; i < 7; i++) {
-//            BallSolid[i] = new ImageView("\\sample\\Small Balls\\Ball" + String.valueOf(i + 1) + ".png");
-//            BallStripes[i] = new ImageView("\\sample\\Small Balls\\Ball" + String.valueOf(i + 9) + ".png");
+//            BallSolid[i] = new ImageView(String.valueOf(getClass().getResource("/ru/kpfu/itis/kirillakhmetov/billiardbattle/img/smallball/Ball" + (i + 1) + ".png")));
+//            BallStripes[i] = new ImageView(String.valueOf(getClass().getResource("/ru/kpfu/itis/kirillakhmetov/billiardbattle/img/smallball/Ball" + (i + 9) + ".png")));
 //            BallSolid[i].setFitWidth(30);
 //            BallSolid[i].setFitHeight(30);
 //            BallStripes[i].setFitHeight(30);
@@ -172,7 +118,7 @@
 //            BallSolid[i].setVisible(false);
 //        }
 //        for (int i = 0; i < 2; i++) {
-//            BallKala[i] = new ImageView("\\sample\\Small Balls\\Ball" + String.valueOf(8) + ".png");
+//            BallKala[i] = new ImageView(String.valueOf(getClass().getResource("/ru/kpfu/itis/kirillakhmetov/billiardbattle/img/smallball/Ball" + 8 + ".png")));
 //            BallKala[i].setFitWidth(30);
 //            BallKala[i].setFitHeight(30);
 //            BallKala[i].setVisible(false);
@@ -194,47 +140,57 @@
 //        group.getChildren().add(leave);
 //    }
 //
+//    public void drawPlayersLabel() {
+//        player1label = new Label();
+//        player2Label = new Label();
+//        player1label.setLayoutX(240);
+//        player1label.setLayoutY(10);
+//        player2Label.setLayoutX(760);
+//        player2Label.setLayoutY(10);
+//        player1label.getStyleClass().add("label-player2");
+//        player2Label.getStyleClass().add("label-player2");
+//        group.getChildren().addAll(player1label, player2Label);
+//    }
+//
+//    public void initializeBalls() {
+//        int index = 1;
+//        for (int level = 0; level < 5; level++) {
+//            double x = GameParameters.BALL_START_X + level * GameParameters.BALL_RADIUS * 2;
+//            for (int position = 0; position <= level; position++) {
+//                double y = GameParameters.BALL_START_Y - GameParameters.BALL_RADIUS * level + GameParameters.BALL_RADIUS * 2 * position;
+//                if (index == 8) {
+//                    ball[index] = new Ball(x, y, "/ru/kpfu/itis/kirillakhmetov/billiardbattle/img/ballimages/" + index + ".png", BallType.BLACK_BALL, (index + 1));
+//                } else if (index % 2 != 0) {
+//                    ball[index] = new Ball(x, y, "/ru/kpfu/itis/kirillakhmetov/billiardbattle/img/ballimages/" + index + ".png", BallType.STRIPED_BALL, (index + 1));
+//                } else {
+//                    ball[index] = new Ball(x, y, "/ru/kpfu/itis/kirillakhmetov/billiardbattle/img/ballimages/" + index + ".png", BallType.SOLID_BALL, (index + 1));
+//                }
+//                index++;
+//            }
+//        }
+//        ball[0] = new Ball(346, 375, "/ru/kpfu/itis/kirillakhmetov/billiardbattle/img/ballimages/0.png", BallType.CUE_BALL, 0);
+//
+//        for (int i = 0; i < 16; i++) {
+//            group.getChildren().add(ball[i].drawBall());
+//        }
+//    }
+//
 //    public static void setVelocity(double x, double y) {
 //        ball[0].setVelocity(x, y);
-//        outToServer.println("V#" + x + "#" + y);
+////        outToServer.println("V#" + x + "#" + y);
 //    }
 //
 //    private void reInitialize() {
 //        for (int i = 0; i < 16; i++) {
 //            group.getChildren().remove(ball[i].getSphere());
 //        }
-//        ball = new Ball[16];
-//        ball[4] = new Ball(865, 325, "\\Ball Images\\4.png", 1, 4);
-//        ball[12] = new Ball(865, 350, "\\Ball Images\\12.png", 2, 12);
-//        ball[3] = new Ball(865, 375, "\\Ball Images\\3.png", 1, 3);
-//        ball[9] = new Ball(865, 400, "\\Ball Images\\9.png", 2, 9);
-//        ball[7] = new Ball(865, 425, "\\Ball Images\\7.png", 1, 7);
-//
-//        ball[1] = new Ball(841, 338, "\\Ball Images\\1.png", 1, 1);
-//        ball[15] = new Ball(841, 363, "\\Ball Images\\15.png", 2, 15);
-//        ball[2] = new Ball(841, 388, "\\Ball Images\\2.png", 1, 2);
-//        ball[5] = new Ball(841, 413, "\\Ball Images\\5.png", 1, 5);
-//
-//        ball[14] = new Ball(817, 350, "\\Ball Images\\14.png", 2, 14);
-//        ball[8] = new Ball(817, 375, "\\Ball Images\\8.png", 3, 8);
-//        ball[10] = new Ball(817, 400, "\\Ball Images\\10.png", 2, 10);
-//
-//        ball[11] = new Ball(793, 363, "\\Ball Images\\11.png", 2, 11);
-//        ball[6] = new Ball(793, 388, "\\Ball Images\\6.png", 1, 6);
-//
-//        ball[13] = new Ball(769, 375, "\\Ball Images\\13.png", 2, 13);
-//
-//        ball[0] = new Ball(346, 375, "\\Ball Images\\0.png", 0, 0);
-//        //Adding them to group
-//        for (int i = 0; i < 16; i++) {
-//            group.getChildren().add(ball[i].drawBall());
-//        }
+//        initializeBalls();
 //        turnNum = 1;
 //        stack_y = 605;
-//        flag2 = 0;
-//        flag3 = 0;
-//        flg = 0;
-//        flagg = 1;
+//        turnChangeFlag = false;
+//        foulCheckFlag = false;
+//        ballCollisionFoulCheckFlag = false;
+//        noBallHitFoulCheck = true;
 //        thisTurnPottedBalls.clear();
 //        for (int i = 0; i < 16; i++) {
 //            potted[i] = false;
@@ -271,22 +227,22 @@
 //        if (turnNum == 1) {
 //            labelDekhaw();
 //        }
-//        int flag = 0;
+//        boolean flag = false;
 //        moveCueBall();
 //        for (int i = 0; i < 16; i++) {
 //            if (!ball[i].getVelocity().isNull()) {
-//                flag = 1;
-//                flag2 = 1;
+//                flag = true;
+//                turnChangeFlag = true;
 //            }
-//            updateBalls(i);
+//            updateSingleBalls(i);
 //            checkForPocket(i);
 //        }
-//        if (flag == 1) {
+//        if (flag) {
 //            isTurn = false;
-//        } else if (flag == 0 && flag2 == 0) {
+//        } else if (!flag && !turnChangeFlag) {
 //            isTurn = true;
 //            turnLabel();
-//        } else if (flag == 0 && flag2 == 1) {
+//        } else if (!flag && turnChangeFlag == true) {
 //            isFoul = false;
 //            checkForCases();
 //            checkAllPottedBalls();
@@ -295,15 +251,15 @@
 //                showAlert();
 //                startFromPause();
 //            }
-//            flag2 = 0;
-//            flag3 = 0;
-//            flg = 0;
-//            flagg = 1;
+//            turnChangeFlag = false;
+//            foulCheckFlag = false;
+//            ballCollisionFoulCheckFlag = false;
+//            noBallHitFoulCheck = true;
 //            turnNum++;
 //            isTurn = true;
 //
-//            if (thisTurnPottedBalls.contains(Integer.valueOf(0))) {
-//                ball[0].setPosition(new Vector(346, 375));
+//            if (thisTurnPottedBalls.contains(0)) {
+//                ball[0].setPosition(new Vector2(346, 375));
 //                ball[0].getSphere().setVisible(true);
 //            }
 //            for (int i = 1; i <= 7; i++) {
@@ -366,23 +322,23 @@
 //
 //        if (thisTurnPottedBalls.contains(Integer.valueOf(0)))
 //            alert.setHeaderText("You potted the Cue ball");
-//        else if (flg == 1)
+//        else if (ballCollisionFoulCheckFlag)
 //            alert.setHeaderText("You must hit your assigned ball type");
 //        else
 //            alert.setHeaderText("You must hit a ball");
 //
-//        if (player1.isMyturn())
+//        if (player1.isMyTurn())
 //            alert.setContentText("Ball in hand " + player1.getName());
 //        else alert.setContentText("Ball in hand " + player2.getName());
 //        alert.show();
 //    }
 //
 //    private void checkAllPottedBalls() {
-//        if (player1.getBallType() == 0)
+//        if (player1.getBallType() == null)
 //            return;
-//        if (player1.isMyturn()) {
+//        if (player1.isMyTurn()) {
 //            int f = 0;
-//            if (player1.getBallType() == 1) {
+//            if (player1.getBallType().equals(BallType.SOLID_BALL)) {
 //                for (int i = 1; i <= 7; i++) {
 //                    if (potted[i] == false) {
 //                        f = 1;
@@ -401,7 +357,7 @@
 //                player1.setAllBallsPotted(true);
 //        } else {
 //            int f = 0;
-//            if (player2.getBallType() == 1) {
+//            if (player2.getBallType().equals(BallType.SOLID_BALL)) {
 //                for (int i = 1; i <= 7; i++) {
 //                    if (potted[i] == false) {
 //                        f = 1;
@@ -421,41 +377,42 @@
 //        }
 //    }
 //
-//    private void updateBalls(int ball_num) {
+//    private void updateSingleBalls(int ball_num) {
 //        if (ball[ball_num].getVelocity().getSize() <= 8e-2) {
 //            ball[ball_num].setVelocity(0, 0);
 //        } else {
 //            ball[ball_num].getPosition().setX(ball[ball_num].getPosition().getX() + ball[ball_num].getVelocity().getX());
 //            ball[ball_num].getPosition().setY(ball[ball_num].getPosition().getY() + ball[ball_num].getVelocity().getY());
+//
 //            for (Ball b : ball) {
 //                if (ball_num != b.getBallNumber() && ball[ball_num].collides(b)) {
 //                    if (turnNum != 1 && !isTurnOffSounds()) {
-//                        SoundEffects.COLLIDE.play();
+////                        SoundEffects.COLLIDE.play();
 //                    }
-//                    if (ball_num == 0 && flg == 0 && player1.getBallType() == 0) {
-//                        flg = 1;
-//                        if (b.getBallType() == 3) {
-//                            flag3 = 1;
+//                    if (ball_num == 0 && !ballCollisionFoulCheckFlag && player1.getBallType() == null) {
+//                        ballCollisionFoulCheckFlag = true;
+//                        if (b.getBallType().equals(BallType.BLACK_BALL)) {
+//                            foulCheckFlag = true;
 //                        }
 //                    }
-//                    if (ball_num == 0 && flg == 0 && player1.getBallType() != 0) {
-//                        flg = 1;
-//                        if (player1.isMyturn()) {
-//                            if (player1.getBallType() != b.getBallType()) {
+//                    if (ball_num == 0 && !ballCollisionFoulCheckFlag && player1.getBallType() != null) {
+//                        ballCollisionFoulCheckFlag = true;
+//                        if (player1.isMyTurn()) {
+//                            if (!player1.getBallType().equals(b.getBallType())) {
 //                                if (b.getBallNumber() == 8 && player1.isAllBallsPotted())
-//                                    flag3 = 0;
-//                                else flag3 = 1;
+//                                    foulCheckFlag = false;
+//                                else foulCheckFlag = true;
 //                            }
 //                        } else {
-//                            if (player2.getBallType() != b.getBallType()) {
+//                            if (!player2.getBallType().equals(b.getBallType())) {
 //                                if (b.getBallNumber() == 8 && player2.isAllBallsPotted())
-//                                    flag3 = 0;
-//                                else flag3 = 1;
+//                                    foulCheckFlag = false;
+//                                else foulCheckFlag = true;
 //                            }
 //                        }
 //                    }
 //                    if (ball_num == 0) {
-//                        flagg = 0;
+//                        noBallHitFoulCheck = false;
 //                    }
 //                    ball[ball_num].getPosition().setX(ball[ball_num].getPosition().getX() - ball[ball_num].getVelocity().getX());
 //                    ball[ball_num].getPosition().setY(ball[ball_num].getPosition().getY() - ball[ball_num].getVelocity().getY());
@@ -466,6 +423,11 @@
 //            ball[ball_num].updateWallCollision();
 //            ball[ball_num].applyTableFriction();
 //            ball[ball_num].spin();
+////            if (Double.isNaN(ball[ball_num].getPosition().getX())) {
+////                ball[ball_num].getPosition().getX();
+////                ball[ball_num].getPosition().getX();
+////            }
+////            System.out.println(ball[ball_num].getPosition().getX() + " " + ball[ball_num].getPosition().getY());
 //        }
 //        ball[ball_num].getSphere().setLayoutX(ball[ball_num].getPosition().getX());
 //        ball[ball_num].getSphere().setLayoutY(ball[ball_num].getPosition().getY());
@@ -473,25 +435,28 @@
 //
 //    private void moveCueBall() {
 //        ball[0].getSphere().addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
-//            if (isTurn && isFoul && player1.isMyturn()) {
+//            if (isTurn && isFoul && player1.isMyTurn()) {
 //                controller.stick.setVisible(false);
 //                controller.circle.setVisible(false);
 //                controller.line.setVisible(false);
 //                controller.dirLine1.setVisible(false);
 //                ball[0].getSphere().setCursor(Cursor.CLOSED_HAND);
 //                if ((event.getSceneX() <= 937 && event.getSceneX() >= 157) && (event.getSceneY() >= 180 && event.getSceneY() <= 568)) {
-//                    ball[0].setPosition(new Vector(event.getSceneX(), event.getSceneY()));
+//                    ball[0].setPosition(new Vector2(event.getSceneX(), event.getSceneY()));
 //                    outToServer.println("M#" + event.getSceneX() + "#" + event.getSceneY());
 //                }
 //
-//            } else if (isTurn && turnNum == 1 && player1.isMyturn()) {
+//            } else if (isTurn && turnNum == 1 && player1.isMyTurn()) {
 //                controller.stick.setVisible(false);
 //                controller.circle.setVisible(false);
 //                controller.line.setVisible(false);
 //                controller.dirLine1.setVisible(false);
 //                ball[0].getSphere().setCursor(Cursor.CLOSED_HAND);
 //                if ((event.getSceneX() <= 344 && event.getSceneX() >= 155) && (event.getSceneY() >= 170 && event.getSceneY() <= 570)) {
-//                    ball[0].setPosition(new Vector(event.getSceneX(), event.getSceneY()));
+//                    ball[0].setPosition(new Vector2(event.getSceneX(), event.getSceneY()));
+////                    if (Double.isNaN(event.getSceneX())) {
+////                        System.out.println(event.getSceneX());
+////                    }
 //                    outToServer.println("M#" + event.getSceneX() + "#" + event.getSceneY());
 //                }
 //            }
@@ -515,27 +480,27 @@
 //                }
 //            }
 //
-//        } else if (turnNum >= 2 && player1.getBallType() == 0) {
+//        } else if (turnNum >= 2 && player1.getBallType() == null) {
 //            if (thisTurnPottedBalls.size() == 0) {
 //                flag = 1;
 //            } else {
 //                int firstPuttedBallNum = thisTurnPottedBalls.get(0).intValue();
 //                if (firstPuttedBallNum >= 1 && firstPuttedBallNum < 8) {
-//                    if (player1.isMyturn()) {
-//                        player1.setBallType(1);
-//                        player2.setBallType(2);
+//                    if (player1.isMyTurn()) {
+//                        player1.setBallType(BallType.SOLID_BALL);
+//                        player2.setBallType(BallType.STRIPED_BALL);
 //                    } else {
-//                        player1.setBallType(2);
-//                        player2.setBallType(1);
+//                        player1.setBallType(BallType.STRIPED_BALL);
+//                        player2.setBallType(BallType.SOLID_BALL);
 //                    }
 //                    showLabel();
 //                } else if (firstPuttedBallNum >= 9 && firstPuttedBallNum <= 15) {
-//                    if (player1.isMyturn()) {
-//                        player1.setBallType(2);
-//                        player2.setBallType(1);
+//                    if (player1.isMyTurn()) {
+//                        player1.setBallType(BallType.STRIPED_BALL);
+//                        player2.setBallType(BallType.SOLID_BALL);
 //                    } else {
-//                        player1.setBallType(1);
-//                        player2.setBallType(2);
+//                        player1.setBallType(BallType.SOLID_BALL);
+//                        player2.setBallType(BallType.STRIPED_BALL);
 //                    }
 //                    showLabel();
 //                }
@@ -553,8 +518,8 @@
 //            if (thisTurnPottedBalls.size() == 0) {
 //                flag = 1;
 //            } else if (thisTurnPottedBalls.size() == 1 && thisTurnPottedBalls.get(0).intValue() == 8) {
-//                if (player1.isMyturn()) {
-//                    if (player1.getBallType() == 1) {
+//                if (player1.isMyTurn()) {
+//                    if (player1.getBallType().equals(BallType.SOLID_BALL)) {
 //                        int f = 0;
 //                        for (int i = 1; i <= 7; i++) {
 //                            if (!potted[i]) {
@@ -578,7 +543,7 @@
 //                        }
 //                    }
 //                } else {
-//                    if (player2.getBallType() == 1) {
+//                    if (player2.getBallType().equals(BallType.SOLID_BALL)) {
 //                        int f = 0;
 //                        for (int i = 1; i <= 7; i++) {
 //                            if (!potted[i]) {
@@ -604,8 +569,8 @@
 //                }
 //            } else {
 //                int firstPuttedBallNum = thisTurnPottedBalls.get(0).intValue();
-//                if (player1.isMyturn()) {
-//                    if (player1.getBallType() != ball[firstPuttedBallNum].getBallType()) {
+//                if (player1.isMyTurn()) {
+//                    if (!player1.getBallType().equals(ball[firstPuttedBallNum].getBallType())) {
 //                        flag = 1;
 //                    }
 //                    for (int i = 0; i < thisTurnPottedBalls.size(); i++) {
@@ -641,10 +606,10 @@
 //
 //
 //        }
-//        if (flag3 == 1 || flagg == 1) {
+//        if (foulCheckFlag || noBallHitFoulCheck) {
 //            isFoul = true;
 //        }
-//        if (flag == 1 || flag3 == 1 || flagg == 1)
+//        if (flag == 1 || foulCheckFlag || noBallHitFoulCheck)
 //            alterTurn();
 //        if (isFoul) {
 //            label7.setVisible(true);
@@ -662,7 +627,7 @@
 //        label1.setLayoutY(624);
 //        label2.setLayoutY(624);
 //        label3.setLayoutY(624);
-//        if (player1.getBallType() == 1) {
+//        if (player1.getBallType().equals(BallType.SOLID_BALL)) {
 //            label1.setText(player1.getName() + " is Solids");
 //            label2.setText(player2.getName() + " is Stripes");
 //            int place1 = 360, place2 = 147;
@@ -699,7 +664,7 @@
 //    }
 //
 //    private void khelaSes() {
-//        if (player1.isMyturn()) {
+//        if (player1.isMyTurn()) {
 //            player2.setWin(true);
 //            player1.setWin(false);
 //            gameOver = true;
@@ -711,7 +676,7 @@
 //    }
 //
 //    private void win() {
-//        if (player1.isMyturn()) {
+//        if (player1.isMyTurn()) {
 //            player2.setWin(false);
 //            player1.setWin(true);
 //            gameOver = true;
@@ -752,15 +717,15 @@
 //    }
 //
 //    private void alterTurn() {
-//        if (player1.isMyturn()) {
-//            player1.setMyturn(false);
-//            player2.setMyturn(true);
+//        if (player1.isMyTurn()) {
+//            player1.setMyTurn(false);
+//            player2.setMyTurn(true);
 //        } else {
-//            player2.setMyturn(false);
-//            player1.setMyturn(true);
+//            player2.setMyTurn(false);
+//            player1.setMyTurn(true);
 //        }
-//        if (!TurnOffSounds)
-//            SoundEffects.TURNCHANGE.play();
+////        if (!TurnOffSounds)
+////            SoundEffects.TURNCHANGE.play();
 //    }
 //
 //
@@ -781,10 +746,10 @@
 //        } else if (sqdistance(x, y, 130, 595) <= check) {
 //            dropit(ballNum);
 //        }
-//        if ((y <= 148 || y >= 602) && !ball[ballNum].getisDropped()) {
+//        if ((y <= 148 || y >= 602) && !ball[ballNum].isDropped()) {
 //            dropit(ballNum);
 //        }
-//        if ((x <= 113 || x >= 979) && !ball[ballNum].getisDropped()) {
+//        if ((x <= 113 || x >= 979) && !ball[ballNum].isDropped()) {
 //            dropit(ballNum);
 //        }
 //
@@ -798,13 +763,13 @@
 //        thisTurnPottedBalls.add(Integer.valueOf(ballNum));
 //        ball[ballNum].setDropped(true);
 //        ball[ballNum].setVelocity(0, 0);
-//        ball[ballNum].setPosition(new Vector(1045, stack_y));
+//        ball[ballNum].setPosition(new Vector2(1045, stack_y));
 //
 //        stack_y -= 25;
 //        if (ballNum == 0) {
 //            stack_y += 25;
 //            ball[0].getSphere().setVisible(false);
-//            ball[0].setPosition(new Vector(0, 0));
+//            ball[0].setPosition(new Vector2(0, 0));
 //            ball[0].setDropped(false);
 //        }
 //    }
@@ -848,7 +813,7 @@
 //        GameScene.turnNum = turnNum;
 //    }
 //
-//    public static boolean isIsTurn() {
+//    public static boolean isTurn() {
 //        return isTurn;
 //    }
 //
@@ -896,19 +861,19 @@
 //        TurnOffSounds = turnOffSounds;
 //    }
 //
-//    public static Player getPlayer1() {
+//    public static Player2 getPlayer1() {
 //        return player1;
 //    }
 //
-//    public static void setPlayer1(Player player1) {
+//    public static void setPlayer1(Player2 player1) {
 //        GameScene.player1 = player1;
 //    }
 //
-//    public static Player getPlayer2() {
+//    public static Player2 getPlayer2() {
 //        return player2;
 //    }
 //
-//    public static void setPlayer2(Player player2) {
+//    public static void setPlayer2(Player2 player2) {
 //        GameScene.player2 = player2;
 //    }
 //
@@ -917,33 +882,19 @@
 //        player1label.setText(s);
 //    }
 //
-//    public static void setImage1(String s) {
-//        Image image = new Image("https://graph.facebook.com/" + s + "/picture?type=large&width=122&height=122");
-//        if (image.isError()) {
-//            imageView1.setImage(new Image("sample/Default Profile Pictures/4860042536_a85b1c2745.jpg"));
-//        } else imageView1.setImage(image);
-//    }
-//
 //    public static void setName2(String s) {
 //        player2.setName(s);
 //        player2Label.setText(s);
 //    }
 //
-//    public static void setImage2(String s) {
-//        Image image = new Image("https://graph.facebook.com/" + s + "/picture?type=large&width=122&height=122");
-//        if (image.isError()) {
-//            imageView2.setImage(new Image("sample/Default Profile Pictures/4860042536_a85b1c2745.jpg"));
-//        } else imageView2.setImage(image);
-//    }
-//
 //    public static void setTurn(boolean t) {
 //        if (t) {
-//            player1.setMyturn(true);
-//            player2.setMyturn(false);
+//            player1.setMyTurn(true);
+//            player2.setMyTurn(false);
 //            label.setText(player1.getName() + " is Breaking");
 //        } else {
-//            player1.setMyturn(false);
-//            player2.setMyturn(true);
+//            player1.setMyTurn(false);
+//            player2.setMyTurn(true);
 //            label.setText(player2.getName() + " is Breaking");
 //        }
 //

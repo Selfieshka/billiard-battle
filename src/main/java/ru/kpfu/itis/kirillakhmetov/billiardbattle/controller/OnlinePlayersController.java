@@ -7,8 +7,8 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.GameScene;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.MyApp;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.MyApp;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.scene.GameScene2;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -41,7 +41,7 @@ public class OnlinePlayersController implements Initializable {
                 alert.setTitle("Error!");
                 alert.setHeaderText("Please select a opponent and amount of money to bet!!");
                 alert.show();
-            } else if (GameScene.getPlayer1().getBalance() < Integer.parseInt(money.getText())) {
+            } else if (GameScene2.getPlayer1().getBalance() < Integer.parseInt(money.getText())) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Error!");
                 alert.setHeaderText("Not enough money!!");

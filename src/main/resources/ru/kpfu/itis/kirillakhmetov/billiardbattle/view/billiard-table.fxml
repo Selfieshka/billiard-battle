@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.image.*?>
@@ -11,7 +12,7 @@
 <?import java.lang.*?>
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0"
       prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="ru.kpfu.itis.kirillakhmetov.billiardbattle.controller.BilliardTableController">
+      fx:controller="ru.kpfu.itis.kirillakhmetov.billiardbattle.controller.Controller">
     <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" height="60.0" layoutX="100.0" layoutY="124.0" stroke="#b5abab"
                    strokeType="INSIDE" width="60.0">
@@ -62,7 +63,7 @@
             </fill>
         </Rectangle>
         <Rectangle arcHeight="5.0" arcWidth="5.0" height="440.0" layoutX="130.0" layoutY="154.0"
-                   onMouseDragReleased="#released" onMouseDragged="#moveLine" onMouseReleased="#released" stroke="BLACK"
+                   onMouseDragReleased="#released" onMouseDragged="#Moveline" onMouseReleased="#released" stroke="BLACK"
                    strokeType="INSIDE" strokeWidth="0.0" width="840.0">
             <fill>
                 <RadialGradient centerX="0.46590909090909094" centerY="0.49514563106796117"
@@ -372,7 +373,7 @@
                 </LinearGradient>
             </fill>
         </Rectangle>
-        <Arc fill="#ff1f1f00" layoutX="330.0" layoutY="377.0" length="200.0" onMouseDragged="#moveLine"
+        <Arc fill="#ff1f1f00" layoutX="330.0" layoutY="377.0" length="200.0" onMouseDragged="#Moveline"
              onMouseReleased="#released" opacity="0.62" radiusX="100.0" radiusY="100.0" startAngle="80.0"
              stroke="#eeeeee" strokeType="INSIDE"/>
         <Line fx:id="line" stroke="WHITE"/>

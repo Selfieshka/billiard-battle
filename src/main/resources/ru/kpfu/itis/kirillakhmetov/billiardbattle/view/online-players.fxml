@@ -5,10 +5,11 @@
 <?import javafx.scene.text.*?>
 <Pane fx:id="parent" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #2b2a4c;" xmlns="http://javafx.com/javafx/8"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.kpfu.itis.kirillakhmetov.billiardbattle.controller.OnlinePlayersController">
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ru.kpfu.itis.kirillakhmetov.billiardbattle.controller.OnlinePlayersController">
     <children>
         <ListView fx:id="active" layoutX="737.0" layoutY="81.0" prefHeight="544.0" prefWidth="306.0"/>
-<!--                  stylesheets="@../list-view.css"/>-->
+        <!--                  stylesheets="@../list-view.css"/>-->
         <Label layoutX="813.0" layoutY="36.0" text="Active Players" textFill="WHITE">
             <font>
                 <Font name="Book Antiqua" size="24.0"/>

@@ -31,6 +31,11 @@
             <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.5</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -60,7 +65,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                ru.kpfu.itis.kirillakhmetov.billiardbattle/ru.kpfu.itis.kirillakhmetov.billiardbattle.MyApp
+                                ru.kpfu.itis.kirillakhmetov.billiardbattle/ru.kpfu.itis.kirillakhmetov.billiardbattle.client.MyApp
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

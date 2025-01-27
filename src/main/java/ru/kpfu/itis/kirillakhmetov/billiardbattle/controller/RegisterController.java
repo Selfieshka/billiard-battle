@@ -6,7 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.MyApp;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.MyApp;
 
 import java.net.URL;
 import java.util.ResourceBundle;

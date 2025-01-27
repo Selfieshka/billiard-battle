@@ -1,23 +1,39 @@
 package ru.kpfu.itis.kirillakhmetov.billiardbattle.entity;
 
-import lombok.Data;
+import lombok.ToString;
 
-@Data
-public class Vector {
+@ToString
+public class Vector2 {
     private double x;
     private double y;
 
-    public Vector(double x, double y) {
+    public Vector2(double x, double y) {
         this.x = x;
         this.y = y;
     }
 
-    public Vector add(Vector v) {
-        return new Vector(x + v.x, y + v.y);
+    public double getX() {
+        return x;
     }
 
-    public Vector sub(Vector v) {
-        return new Vector(x - v.x, y - v.y);
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public Vector2 add(Vector2 v) {
+        return new Vector2(x + v.x, y + v.y);
+    }
+
+    public Vector2 sub(Vector2 v) {
+        return new Vector2(x - v.x, y - v.y);
     }
 
     public void multiply(double f) {
@@ -35,14 +51,11 @@ public class Vector {
         y /= intensity;
     }
 
-    public double dot(Vector v) {
-//        System.out.println(v.getX());
-//        System.out.println("------------------");
+    public double dot(Vector2 v) {
         return x * v.x + y * v.y;
     }
 
     public boolean isNull() {
         return ((x == 0) && (y == 0));
     }
-
 }

@@ -6,41 +6,39 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
-import lombok.Data;
-
-import java.util.Objects;
+import lombok.ToString;
 
 import static javafx.scene.paint.Color.WHITE;
 
-@Data
-public class Ball {
+@ToString
+public class SingleBall {
     private double acceleration, diameter;
-    private Vector position, velocity, initialPosition;
+    private Vector2 position, velocity, initialPosition;
     private Sphere sphere = new Sphere(GameParameters.BALL_RADIUS);
     private String image;
-    private BallType ballType;
+    private int ballType; //PASS 0 FOR CUE BALL ,1 FOR SOLID BALL, 2 FOR STRIPED BALL ,3 for Black Ball
     private int ballNumber;
     private boolean isDropped;
 
-    public Ball(double positionX, double positionY, String image, BallType ballType, int ballNumber) {
-        position = new Vector(positionX, positionY);
-        velocity = new Vector(0, 0);
+    public SingleBall(double positionX, double positionY, String image, int ballType, int ballNumber) {
+        position = new Vector2(positionX, positionY);
+        velocity = new Vector2(0, 0);
         this.image = image;
         this.ballType = ballType;
         this.ballNumber = ballNumber;
         isDropped = false;
         acceleration = .99;
-        diameter = GameParameters.BALL_RADIUS * 2;
-        initialPosition = new Vector(positionX, positionY);
+        diameter = 25.0;
+        initialPosition = new Vector2(positionX, positionY);
     }
 
-    public Node drawBall() {
+    public Node DrawBall() {
         sphere.setRadius(GameParameters.BALL_RADIUS);
         sphere.setLayoutX(position.getX());
         sphere.setLayoutY(position.getY());
         sphere.setRotationAxis(Rotate.Y_AXIS);
         sphere.setRotate(270);
-        Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(image)));
+        Image img = new Image(getClass().getResourceAsStream(image));
         PhongMaterial material = new PhongMaterial();
         material.setSpecularColor(WHITE);
         material.setDiffuseMap(img);
@@ -62,19 +60,20 @@ public class Ball {
         sphere.getTransforms().addAll(rx, ry);
     }
 
-    public boolean collides(Ball b) {
+    public boolean collides(SingleBall b) {
+        double a = position.sub(b.position).getSize();
         return position.sub(b.position).getSize() <= (diameter / 2 + b.diameter / 2);
     }
 
-    public void transferEnergy(Ball b) {
-        Vector nv2 = position.sub(b.position);
-        nv2.multiply(velocity.dot(nv2));
+    public void transferEnergy(SingleBall b) {
+        Vector2 nv2 = position.sub(b.position);
         nv2.normalize();
-        Vector nv1 = velocity.sub(nv2);
-        Vector nv2b = b.position.sub(position);
+        nv2.multiply(velocity.dot(nv2));
+        Vector2 nv1 = velocity.sub(nv2);
+        Vector2 nv2b = b.position.sub(position);
         nv2b.normalize();
         nv2b.multiply(b.velocity.dot(nv2b));
-        Vector nv1b = b.velocity.sub(nv2b);
+        Vector2 nv1b = b.velocity.sub(nv2b);
         b.velocity = nv2.add(nv1b);
         velocity = nv1.add(nv2b);
     }
@@ -154,13 +153,51 @@ public class Ball {
         }
     }
 
+
     public void applyTableFriction() {
         velocity.setX(velocity.getX() * acceleration);
         velocity.setY(velocity.getY() * acceleration);
     }
 
+
+    public Vector2 getPosition() {
+        return position;
+    }
+
+    public void setPosition(Vector2 position) {
+        this.position = position;
+    }
+
+    public Vector2 getVelocity() {
+        return velocity;
+    }
+
     public void setVelocity(double x, double y) {
         this.velocity.setX(x);
         this.velocity.setY(y);
+    }
+
+    public Sphere getSphere() {
+        return sphere;
+    }
+
+    public int getBallType() {
+        return ballType;
+    }
+
+    public int getBallNumber() {
+        return ballNumber;
+    }
+
+    public boolean getisDropped() {
+        return isDropped;
+    }
+
+    public void setDropped(boolean dropped) {
+        isDropped = dropped;
+    }
+
+    public Vector2 getInitialPosition() {
+        return initialPosition;
     }
 }
