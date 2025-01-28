@@ -25,7 +25,7 @@ public class MenuScene {
         gameButton = new Button("New Game");
         exitbutton = new Button("Exit");
         logout = new Button("Logout");
-        current.getStylesheets().add(String.valueOf(getClass().getResource("/ru/kpfu/itis/kirillakhmetov/billiardbattle/menu.css")));
+        current.getStylesheets().add(String.valueOf(getClass().getResource("/ru/kpfu/itis/kirillakhmetov/billiardbattle/css/menu.css")));
         gameButton.getStyleClass().add("button-orange2");
         exitbutton.getStyleClass().add("button-orange2");
         logout.getStyleClass().add("button-orange2");

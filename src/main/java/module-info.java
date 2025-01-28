@@ -4,6 +4,7 @@ module ru.kpfu.itis.kirillakhmetov.billiardbattle {
     requires java.desktop;
     requires static lombok;
     requires java.sql;
+    requires org.postgresql.jdbc;
 
     exports ru.kpfu.itis.kirillakhmetov.billiardbattle.scene;
     exports ru.kpfu.itis.kirillakhmetov.billiardbattle.controller;

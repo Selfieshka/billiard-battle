@@ -15,7 +15,7 @@ public class Server {
         Connection c;
         ResultSet rs;
         Statement st;
-//        Class.forName("");
+        Class.forName("org.postgresql.Driver");
         c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/billiard-battle", "postgres", "5256");
         //System.out.println ("database opened");
         st = c.createStatement();
@@ -37,6 +37,7 @@ public class Server {
             System.out.println(" Client " + id + " is now connected");
             id++;
         }
+
     }
 }
 

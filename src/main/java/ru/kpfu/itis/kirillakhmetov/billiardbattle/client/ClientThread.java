@@ -8,12 +8,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.controller.Controller;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.controller.OnlinePlayersController;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.entity.Vector2;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.scene.GameScene2;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 
 public class ClientThread implements Runnable {
@@ -25,13 +27,13 @@ public class ClientThread implements Runnable {
         this.controller = controller;
         this.outToServer = outToServer;
         this.inFromServer = inFromServer;
-
     }
 
     public void run() {
         while (true) {
             try {
                 String string = inFromServer.readLine();
+                System.out.println(string);
                 if (string != null) {
                     //System.out.println ("FROM SERVER: " + string);
                     ArrayList<String> str = new ArrayList<>();
@@ -78,7 +80,7 @@ public class ClientThread implements Runnable {
                     }
                     //this is breaking assign
                     else if (str.get(0).compareTo("login2") == 0) {
-                        //System.out.println (string);
+                        System.out.println(str);
                         GameScene2.getPlayer2().setName(str.get(1));
                         GameScene2.getPlayer2().setID(str.get(2));
                         GameScene2.setImage2(str.get(2));
@@ -220,17 +222,17 @@ public class ClientThread implements Runnable {
                     //done loading leaderboard
                     //this is activeplayerlist show
                     else if (str.get(0).compareTo("startActive") == 0) {
-//                        OnlinePlayers.strings = FXCollections.observableArrayList();
+                        OnlinePlayersController.strings = FXCollections.observableArrayList();
                     } else if (str.get(0).compareTo("active") == 0) {
-//                        OnlinePlayers.strings.add(str.get(1));
+                        OnlinePlayersController.strings.add(str.get(1));
                     } else if (str.get(0).compareTo("endActive") == 0) {
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
                                 try {
-                                    Parent root = FXMLLoader.load(getClass().getResource("OnlinePlayers.fxml"));
-//                                    MyApp.online = new Scene(root);
-//                                    MyApp.window.setScene(MyApp.online);
+                                    Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/ru/kpfu/itis/kirillakhmetov/billiardbattle/view/online-players.fxml")));
+                                    MyApp.onlinePlayers = new Scene(root);
+                                    MyApp.window.setScene(MyApp.onlinePlayers);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }

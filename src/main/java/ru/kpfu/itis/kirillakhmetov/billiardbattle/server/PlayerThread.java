@@ -29,7 +29,7 @@ public class PlayerThread implements Runnable {
         while (true) {
             try {
                 String sentence = inFromClient.readLine();
-                System.out.println(sentence);
+                System.out.println("сообщение " + sentence);
                 if (sentence != null) {
                     //venge felo
                     ArrayList<String> str = new ArrayList<>();
@@ -58,6 +58,7 @@ public class PlayerThread implements Runnable {
                     }
                     //third case login koraw
                     else if (str.get(0).compareTo("login") == 0) {
+                        System.out.println(str);
                         setlogin(str.get(1), str.get(2));
                     }
                     //fourth case sign up koraw
@@ -121,22 +122,23 @@ public class PlayerThread implements Runnable {
     }
 
     private void sendOtherPlayer(String name, int money) throws Exception {
-        String cmd = "SELECT * FROM players where Name='" + name + "'";
+        String cmd = "SELECT * FROM player where name='" + name + "'";
         rs = st.executeQuery(cmd);
         if (rs.next()) {
-            int m = rs.getInt("Money");
+            System.out.println(2);
+            int m = rs.getInt("money");
             if (m < money) {
                 outToMyClient.println("canPlay#false#" + m);
             } else {
                 for (int i = 0; i < playerThreads.size(); i++) {
                     if (playerThreads.get(i).getThisPlayer().getName().compareTo(name) == 0 && playerThreads.get(i).getThisPlayer().isLoggedin()) {
+                        System.out.println("canPlay#" + thisPlayer.getName() + "#" + money);
                         playerThreads.get(i).getOutToMyClient().println("canPlay#" + thisPlayer.getName() + "#" + money);
                         break;
                     }
                 }
             }
         }
-
     }
 
     private void sendActivePlayers(String username) {
@@ -150,7 +152,7 @@ public class PlayerThread implements Runnable {
     }
 
     private void updateDatabase(String player1, String player2, int bet) throws Exception {
-        String cmd = "SELECT * FROM players where Name='" + player1 + "'";
+        String cmd = "SELECT * FROM player where Name='" + player1 + "'";
         rs = st.executeQuery(cmd);
 
         if (rs.next()) {
@@ -160,24 +162,24 @@ public class PlayerThread implements Runnable {
             gameWon += 1;
             int m = rs.getInt("Money");
             m += bet;
-            String cmd2 = "UPDATE players SET GamesPlayed='" + gamePlayed + "' WHERE Name = '" + player1 + "'";
+            String cmd2 = "UPDATE player SET GamesPlayed='" + gamePlayed + "' WHERE Name = '" + player1 + "'";
             st.executeUpdate(cmd2);
-            String cmd3 = "UPDATE players SET GamesWon='" + gameWon + "' WHERE Name = '" + player1 + "'";
+            String cmd3 = "UPDATE player SET GamesWon='" + gameWon + "' WHERE Name = '" + player1 + "'";
             st.executeUpdate(cmd3);
-            String cmd7 = "UPDATE players SET Money='" + m + "' WHERE Name = '" + player1 + "'";
+            String cmd7 = "UPDATE player SET Money='" + m + "' WHERE Name = '" + player1 + "'";
             st.executeUpdate(cmd7);
         }
 
-        String cmd4 = "SELECT * FROM players where Name='" + player2 + "'";
+        String cmd4 = "SELECT * FROM player where Name='" + player2 + "'";
         rs = st.executeQuery(cmd4);
         if (rs.next()) {
             int gamePlayed = rs.getInt("GamesPlayed");
             gamePlayed += 1;
             int m = rs.getInt("Money");
             m -= bet;
-            String cmd5 = "UPDATE players SET GamesPlayed='" + gamePlayed + "' WHERE Name = '" + player2 + "'";
+            String cmd5 = "UPDATE player SET GamesPlayed='" + gamePlayed + "' WHERE Name = '" + player2 + "'";
             st.executeUpdate(cmd5);
-            String cmd8 = "UPDATE players SET Money='" + m + "' WHERE Name = '" + player2 + "'";
+            String cmd8 = "UPDATE player SET Money='" + m + "' WHERE Name = '" + player2 + "'";
             st.executeUpdate(cmd8);
         }
         thisPlayer.setPlaying(false);
@@ -209,7 +211,7 @@ public class PlayerThread implements Runnable {
         String cmd = "SELECT * FROM player";
         rs = st.executeQuery(cmd);
         while (rs.next()) {
-            String name = rs.getString("name");
+            String name = rs.getString("Name");
             String id = rs.getString("FacebookID");
             int gamePlayed = rs.getInt("GamesPlayed");
             int gameWon = rs.getInt("GamesWon");
@@ -222,7 +224,6 @@ public class PlayerThread implements Runnable {
     }
 
     private void setlogin(String username, String password) throws Exception {
-        System.out.println("LOGIN");
         for (int i = 0; i < playerThreads.size(); i++) {
             if (playerThreads.get(i).getThisPlayer().getName().compareTo(username) == 0 && playerThreads.get(i).getThisPlayer().isLoggedin()) {
                 outToMyClient.println("login#false#onno");
@@ -233,13 +234,13 @@ public class PlayerThread implements Runnable {
         boolean x = false;
         rs = st.executeQuery(cmd);
         while (rs.next()) {
-            String name = rs.getString("Name");
-            String pass = rs.getString("Password");
-            String id = rs.getString("FacebookID");
-            int money = rs.getInt("Money");
+            String name = rs.getString("name");
+            String pass = rs.getString("password");
+//            String id = rs.getString("FacebookID");
+            int money = rs.getInt("money");
             if (name.compareTo(username) == 0 && pass.compareTo(password) == 0) {
-                outToMyClient.println("login#" + username + "#" + id + "#" + money);
-                thisPlayer = new PlayerData(name, pass, id, money, true);
+                outToMyClient.println("login#" + username + "#" + 0 + "#" + money);
+                thisPlayer = new PlayerData(name, pass, "0", money, true);
                 x = true;
                 break;
             }

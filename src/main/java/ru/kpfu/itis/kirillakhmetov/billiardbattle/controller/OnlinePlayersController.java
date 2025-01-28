@@ -24,7 +24,7 @@ public class OnlinePlayersController implements Initializable {
     TextField money;
     @FXML
     ListView<String> active;
-    static ObservableList<String> strings;
+    public static ObservableList<String> strings;
     double x = 0, y = 0;
 
     @Override
@@ -33,6 +33,7 @@ public class OnlinePlayersController implements Initializable {
         back.setOnAction(e -> {
             MyApp.window.setScene(MyApp.menu);
         });
+        active.getStylesheets().add(String.valueOf(getClass().getResource("/ru/kpfu/itis/kirillakhmetov/billiardbattle/css/list-view.css")));
         active.setItems(strings);
         active.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         play.setOnAction(e -> {
@@ -47,7 +48,7 @@ public class OnlinePlayersController implements Initializable {
                 alert.setHeaderText("Not enough money!!");
                 alert.show();
             } else {
-//                MyApp.outToServer.println("canPlay#" + active.getSelectionModel().getSelectedItem() + "#" + money.getText());
+                MyApp.outToServer.println("canPlay#" + active.getSelectionModel().getSelectedItem() + "#" + money.getText());
             }
         });
     }

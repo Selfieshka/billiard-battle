@@ -10,14 +10,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.controller.Controller;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.entity.Player2;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.entity.Player;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.entity.SingleBall;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.entity.Vector2;
 
@@ -32,7 +31,7 @@ public class GameScene2 {
     private Scene scene, menu;
     private Parent root;
     public static SingleBall[] ball;
-    private static Player2 player1, player2;
+    private static Player player1, player2;
     private static int turnNum = 1;
     private static boolean isTurn;
     private boolean isFoul;
@@ -68,7 +67,7 @@ public class GameScene2 {
     private static int bet;
     private Controller controller;
 
-    public GameScene2(Group group, Scene scene, Scene menu, Parent root, Stage window, Controller controller) throws Exception {
+    public GameScene2(Group group, Scene scene, Scene menu, Parent root, Stage window, PrintWriter outToServer, BufferedReader inFromServer,  Controller controller) throws Exception {
         ball = new SingleBall[16];
         this.outToServer = outToServer;
         this.inFromServer = inFromServer;
@@ -86,8 +85,8 @@ public class GameScene2 {
         player1label.getStyleClass().add("label-player2");
         player2Label.getStyleClass().add("label-player2");
         group.getChildren().addAll(player1label, player2Label);
-        player1 = new Player2("");
-        player2 = new Player2("");
+        player1 = new Player("");
+        player2 = new Player("");
         imageView1 = new ImageView();
         imageView2 = new ImageView();
         imageView1.setLayoutX(100);
@@ -104,7 +103,7 @@ public class GameScene2 {
 
         group.getChildren().addAll(root, imageView1, imageView2);
         this.scene = scene;
-        scene.getStylesheets().add("/ru/kpfu/itis/kirillakhmetov/billiardbattle/menu.css");
+        scene.getStylesheets().add(String.valueOf(getClass().getResource("/ru/kpfu/itis/kirillakhmetov/billiardbattle/css/menu.css")));
         initializeBalls();
         thisTurnPottedBalls = new ArrayList<>();
         player1.setMyturn(true);
@@ -874,19 +873,19 @@ public class GameScene2 {
         TurnOffSounds = turnOffSounds;
     }
 
-    public static Player2 getPlayer1() {
+    public static Player getPlayer1() {
         return player1;
     }
 
-    public static void setPlayer1(Player2 player1) {
+    public static void setPlayer1(Player player1) {
         GameScene2.player1 = player1;
     }
 
-    public static Player2 getPlayer2() {
+    public static Player getPlayer2() {
         return player2;
     }
 
-    public static void setPlayer2(Player2 player2) {
+    public static void setPlayer2(Player player2) {
         GameScene2.player2 = player2;
     }
 
@@ -896,10 +895,10 @@ public class GameScene2 {
     }
 
     public static void setImage1(String s) {
-        Image image = new Image("https://graph.facebook.com/" + s + "/picture?type=large&width=122&height=122");
-        if (image.isError()) {
-            imageView1.setImage(new Image("sample/Default Profile Pictures/4860042536_a85b1c2745.jpg"));
-        } else imageView1.setImage(image);
+//        Image image = new Image("https://graph.facebook.com/" + s + "/picture?type=large&width=122&height=122");
+//        if (image.isError()) {
+//            imageView1.setImage(new Image("sample/Default Profile Pictures/4860042536_a85b1c2745.jpg"));
+//        } else imageView1.setImage(image);
     }
 
     public static void setName2(String s) {
@@ -908,10 +907,10 @@ public class GameScene2 {
     }
 
     public static void setImage2(String s) {
-        Image image = new Image("https://graph.facebook.com/" + s + "/picture?type=large&width=122&height=122");
-        if (image.isError()) {
-            imageView2.setImage(new Image("sample/Default Profile Pictures/4860042536_a85b1c2745.jpg"));
-        } else imageView2.setImage(image);
+//        Image image = new Image("https://graph.facebook.com/" + s + "/picture?type=large&width=122&height=122");
+//        if (image.isError()) {
+//            imageView2.setImage(new Image("sample/Default Profile Pictures/4860042536_a85b1c2745.jpg"));
+//        } else imageView2.setImage(image);
     }
 
     public static void setTurn(boolean t) {
