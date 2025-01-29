@@ -24,7 +24,7 @@
                 <VBox.margin>
                     <Insets left="50.0" right="50.0" top="10.0"/>
                 </VBox.margin>
-                <TextField fx:id="txtfield" prefHeight="50.0" promptText="Никнейм"
+                <TextField fx:id="username" prefHeight="50.0" promptText="Никнейм"
                            style="-fx-background-color: transparent; -fx-prompt-text-fill: #dedede; -fx-text-fill: white;"
                            HBox.hgrow="ALWAYS">
                     <font>
@@ -39,7 +39,7 @@
                 <VBox.margin>
                     <Insets left="50.0" right="50.0" top="10.0"/>
                 </VBox.margin>
-                <PasswordField fx:id="passfield" prefHeight="50.0" prefWidth="450.0" promptText="Пароль"
+                <PasswordField fx:id="password" prefHeight="50.0" prefWidth="450.0" promptText="Пароль"
                                style="-fx-background-color: transparent; -fx-prompt-text-fill: #dedede; -fx-text-fill: white;"
                                HBox.hgrow="ALWAYS">
                     <font>

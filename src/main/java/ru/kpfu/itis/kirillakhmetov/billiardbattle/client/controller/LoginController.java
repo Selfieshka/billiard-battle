@@ -6,7 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.MyApp;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.BilliardBattleApplication;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -19,17 +19,17 @@ public class LoginController implements Initializable {
     @FXML
     Button register;
     @FXML
-    TextField txtfield;
+    TextField username;
     @FXML
-    PasswordField passfield;
+    PasswordField password;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         login.setOnAction(e -> {
-            MyApp.outToServer.println("login#" + txtfield.getText() + "#" + passfield.getText());
+            BilliardBattleApplication.outToServer.println("login#" + username.getText() + "#" + password.getText());
         });
         register.setOnAction(event -> {
-            MyApp.window.setScene(MyApp.register);
+            BilliardBattleApplication.window.setScene(BilliardBattleApplication.register);
         });
     }
 }
