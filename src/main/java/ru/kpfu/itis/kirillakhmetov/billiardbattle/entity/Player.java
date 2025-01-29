@@ -1,13 +1,17 @@
 package ru.kpfu.itis.kirillakhmetov.billiardbattle.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@AllArgsConstructor
 public class Player {
     private boolean isMyturn;
     private String name, ID;
     private boolean win;
+    private String password;
     private int ballType;//1 will mean solids 2 will mean stripes 0 will mean not set
     private boolean allBallsPotted;
     private int balance;

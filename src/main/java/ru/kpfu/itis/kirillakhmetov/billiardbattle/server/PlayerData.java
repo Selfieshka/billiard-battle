@@ -1,5 +1,10 @@
 package ru.kpfu.itis.kirillakhmetov.billiardbattle.server;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
+@AllArgsConstructor
+@Builder
 public class PlayerData {
     private String name, pass, fbID;
     private int money;

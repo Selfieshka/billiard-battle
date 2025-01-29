@@ -1,21 +1,37 @@
 package ru.kpfu.itis.kirillakhmetov.billiardbattle.server;
 
+import lombok.Getter;
+import lombok.Setter;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.entity.Player;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.service.PlayerService;
+
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 public class PlayerThread implements Runnable {
-    private PrintWriter outToClient = null, outToMyClient;
+    @Getter
+    @Setter
+    private PrintWriter outToClient = null;
+    @Getter
+    @Setter
+    private PrintWriter outToMyClient;
+    @Getter
+    @Setter
+    private PlayerData thisPlayer;
     private BufferedReader inFromClient;
     private Socket socket;
     private static boolean turn = false;
     private ResultSet rs;
     private Statement st;
     private static ArrayList<PlayerThread> playerThreads = new ArrayList<>();
-    private PlayerData thisPlayer;
+    private PlayerService playerService = new PlayerService();
 
     public PlayerThread(BufferedReader inFromClient, Socket socket, PrintWriter outToMyClient, Statement st) {
         this.inFromClient = inFromClient;
@@ -29,15 +45,12 @@ public class PlayerThread implements Runnable {
         while (true) {
             try {
                 String sentence = inFromClient.readLine();
-                System.out.println("сообщение " + sentence);
+                System.out.println("сообщение" + sentence);
                 if (sentence != null) {
-                    //venge felo
-                    ArrayList<String> str = new ArrayList<>();
-                    for (String val : sentence.split("[#]")) {
-                        if (!val.isEmpty()) {
-                            str.add(val);
-                        }
-                    }
+                    List<String> str = Arrays.stream(sentence.split("#"))
+                            .filter(val -> !val.isEmpty())
+                            .toList();
+
                     //done
                     //now check cases
                     //first case if the game is over
@@ -59,20 +72,20 @@ public class PlayerThread implements Runnable {
                     //third case login koraw
                     else if (str.get(0).compareTo("login") == 0) {
                         System.out.println(str);
-                        setlogin(str.get(1), str.get(2));
+                        signIn(str.get(1), str.get(2));
                     }
                     //fourth case sign up koraw
                     else if (str.get(0).compareTo("signup") == 0) {
-                        setSignup(str.get(1), str.get(2), str.get(3));
+                        signUp(str.get(1), str.get(2), str.get(3));
                     }
                     //next case profile info pathaw
                     else if (str.get(0).compareTo("profile") == 0) {
                         showProfile(str.get(1));
                     }
-                    //next case leaderboard pathaw
-                    else if (str.get(0).compareTo("leaderboard") == 0) {
-                        sendLeaderBoard();
-                    }
+//                    //next case leaderboard pathaw
+//                    else if (str.get(0).compareTo("leaderboard") == 0) {
+//                        sendLeaderBoard();
+//                    }
                     //next case active player list pathaw
                     else if (str.get(0).compareTo("active") == 0) {
                         sendActivePlayers(str.get(1));
@@ -83,9 +96,9 @@ public class PlayerThread implements Runnable {
                     }
                     //Next case reject msg pass kora
                     else if (str.get(0).compareTo("reject") == 0) {
-                        for (int i = 0; i < playerThreads.size(); i++) {
-                            if (playerThreads.get(i).getThisPlayer().getName().compareTo(str.get(1)) == 0) {
-                                playerThreads.get(i).getOutToMyClient().println(sentence);
+                        for (PlayerThread playerThread : playerThreads) {
+                            if (playerThread.getThisPlayer().getName().compareTo(str.get(1)) == 0) {
+                                playerThread.getOutToMyClient().println(sentence);
                             }
                         }
                     } else if (str.get(0).compareTo("play") == 0) {
@@ -97,24 +110,22 @@ public class PlayerThread implements Runnable {
                     else {
                         outToClient.println(sentence);
                     }
-
-
                 }
 
             } catch (Exception e) {
-
+                throw new RuntimeException(e);
             }
         }
     }
 
     private void khelasuru(String opponent, int bet) {
-        for (int i = 0; i < playerThreads.size(); i++) {
-            if (playerThreads.get(i).getThisPlayer().getName().compareTo(opponent) == 0 && playerThreads.get(i).getThisPlayer().isLoggedin()) {
-                outToClient = playerThreads.get(i).getOutToMyClient();
-                playerThreads.get(i).setOutToClient(outToMyClient);
+        for (PlayerThread playerThread : playerThreads) {
+            if (playerThread.getThisPlayer().getName().compareTo(opponent) == 0 && playerThread.getThisPlayer().isLoggedin()) {
+                outToClient = playerThread.getOutToMyClient();
+                playerThread.setOutToClient(outToMyClient);
                 thisPlayer.setPlaying(true);
-                playerThreads.get(i).getThisPlayer().setPlaying(true);
-                outToMyClient.println("login2#" + opponent + "#" + playerThreads.get(i).getThisPlayer().getFbID() + "#" + bet + "#true");
+                playerThread.getThisPlayer().setPlaying(true);
+                outToMyClient.println("login2#" + opponent + "#" + playerThread.getThisPlayer().getFbID() + "#" + bet + "#true");
                 outToClient.println("login2#" + thisPlayer.getName() + "#" + thisPlayer.getFbID() + "#" + bet + "#false");
                 break;
             }
@@ -192,20 +203,20 @@ public class PlayerThread implements Runnable {
 
     }
 
-    private void sendLeaderBoard() throws Exception {
-        outToMyClient.println("start#");
-        String cmd = "SELECT * FROM player";
-        rs = st.executeQuery(cmd);
-        while (rs.next()) {
-            String name = rs.getString("Name");
-            int gamePlayed = rs.getInt("GamesPlayed");
-            int gameWon = rs.getInt("GamesWon");
-            int money = rs.getInt("Money");
-            outToMyClient.println("leaderboard#" + name + "#" + gamePlayed + "#" + gameWon + "#" + money);
-
-        }
-        outToMyClient.println("#end");
-    }
+//    private void sendLeaderBoard() throws Exception {
+//        outToMyClient.println("start#");
+//        String cmd = "SELECT * FROM player";
+//        rs = st.executeQuery(cmd);
+//        while (rs.next()) {
+//            String name = rs.getString("Name");
+//            int gamePlayed = rs.getInt("GamesPlayed");
+//            int gameWon = rs.getInt("GamesWon");
+//            int money = rs.getInt("Money");
+//            outToMyClient.println("leaderboard#" + name + "#" + gamePlayed + "#" + gameWon + "#" + money);
+//
+//        }
+//        outToMyClient.println("#end");
+//    }
 
     private void showProfile(String username) throws Exception {
         String cmd = "SELECT * FROM player";
@@ -223,77 +234,78 @@ public class PlayerThread implements Runnable {
         }
     }
 
-    private void setlogin(String username, String password) throws Exception {
-        for (int i = 0; i < playerThreads.size(); i++) {
-            if (playerThreads.get(i).getThisPlayer().getName().compareTo(username) == 0 && playerThreads.get(i).getThisPlayer().isLoggedin()) {
+    private void signIn(String username, String password) {
+        for (PlayerThread playerThread : playerThreads) {
+            if (playerThread.getThisPlayer().getName().compareTo(username) == 0 && playerThread.getThisPlayer().isLoggedin()) {
                 outToMyClient.println("login#false#onno");
                 return;
             }
         }
-        String cmd = "SELECT * FROM player";
-        boolean x = false;
-        rs = st.executeQuery(cmd);
-        while (rs.next()) {
-            String name = rs.getString("name");
-            String pass = rs.getString("password");
-//            String id = rs.getString("FacebookID");
-            int money = rs.getInt("money");
-            if (name.compareTo(username) == 0 && pass.compareTo(password) == 0) {
-                outToMyClient.println("login#" + username + "#" + 0 + "#" + money);
-                thisPlayer = new PlayerData(name, pass, "0", money, true);
-                x = true;
-                break;
+
+        if (playerService.signIn(username, password)) {
+            Optional<Player> playerFromDb = playerService.getByName(username);
+            if (playerFromDb.isPresent()) {
+                Player player = playerFromDb.get();
+                thisPlayer = PlayerData.builder()
+                        .name(player.getName())
+                        .pass(player.getPassword())
+                        .fbID("0")
+                        .money(player.getBalance())
+                        .loggedin(true)
+                        .build();
+                outToMyClient.println("login#" + player.getName() + "#" + 0 + "#" + player.getBalance());
             }
-        }
-        if (!x) {
+        } else {
             outToMyClient.println("login#false");
         }
+
+//        String cmd = "SELECT * FROM player";
+//        boolean x = false;
+//        rs = st.executeQuery(cmd);
+//        while (rs.next()) {
+//            String name = rs.getString("name");
+//            String pass = rs.getString("password");
+////            String id = rs.getString("FacebookID");
+//            int money = rs.getInt("money");
+//            if (name.compareTo(username) == 0 && pass.compareTo(password) == 0) {
+//                outToMyClient.println("login#" + username + "#" + 0 + "#" + money);
+//                thisPlayer = new PlayerData(name, pass, "0", money, true);
+//                x = true;
+//                break;
+//            }
+//        }
+//        if (!x) {
+//            outToMyClient.println("login#false");
+//        }
     }
 
-    private void setSignup(String username, String pass, String fbID) throws Exception {
-        boolean x = true;
-        String cmd = "SELECT * FROM player";
-        rs = st.executeQuery(cmd);
-        while (rs.next()) {
-            String name = rs.getString("Name");
-            if (name.compareTo(username) == 0) {
-                outToMyClient.println("signup#false");
-                x = false;
-                break;
-            }
-        }
-        if (x) {
+    private void signUp(String username, String password, String fbID) throws Exception {
+        Optional<Player> playerFromDb = playerService.getByName(username);
+        if (playerFromDb.isEmpty()) {
+            playerService.signUp(username, password);
             outToMyClient.println("signup#true");
-            String cmd1 = "INSERT INTO player (Name,Password,FacebookID,GamesPlayed,GamesWon,Money) VALUES ('" + username + "','" + pass + "','" + fbID + "', '" + 0 + "','" + 0 + "','" + 100 + "')";
-            st.executeUpdate(cmd1);
+        } else {
+            outToMyClient.println("signup#false");
         }
+//        boolean x = true;
+//        String cmd = "SELECT * FROM player";
+//        rs = st.executeQuery(cmd);
+//        while (rs.next()) {
+//            String name = rs.getString("Name");
+//            if (name.compareTo(username) == 0) {
+//                outToMyClient.println("signup#false");
+//                x = false;
+//                break;
+//            }
+//        }
+//        if (x) {
+//            outToMyClient.println("signup#true");
+//            String cmd1 = "INSERT INTO player (Name,Password,FacebookID,GamesPlayed,GamesWon,Money) VALUES ('" + username + "','" + password + "','" + fbID + "', '" + 0 + "','" + 0 + "','" + 100 + "')";
+//            st.executeUpdate(cmd1);
+//        }
     }
 
     public void addThread(PlayerThread pt) {
         playerThreads.add(pt);
-    }
-
-    public PlayerData getThisPlayer() {
-        return thisPlayer;
-    }
-
-    public void setThisPlayer(PlayerData thisPlayer) {
-        this.thisPlayer = thisPlayer;
-    }
-
-    public PrintWriter getOutToMyClient() {
-        return outToMyClient;
-    }
-
-    public PrintWriter getOutToClient() {
-        return outToClient;
-    }
-
-    public void setOutToClient(PrintWriter outToClient) {
-        this.outToClient = outToClient;
-    }
-
-    public void setOutToMyClient(PrintWriter outToMyClient) {
-        this.outToMyClient = outToMyClient;
     }
 }

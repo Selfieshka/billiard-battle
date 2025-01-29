@@ -67,7 +67,7 @@ public class GameScene2 {
     private static int bet;
     private Controller controller;
 
-    public GameScene2(Group group, Scene scene, Scene menu, Parent root, Stage window, PrintWriter outToServer, BufferedReader inFromServer,  Controller controller) throws Exception {
+    public GameScene2(Group group, Scene scene, Scene menu, Parent root, Stage window, PrintWriter outToServer, BufferedReader inFromServer, Controller controller) throws Exception {
         ball = new SingleBall[16];
         this.outToServer = outToServer;
         this.inFromServer = inFromServer;
