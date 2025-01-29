@@ -1,7 +1,7 @@
 package ru.kpfu.itis.kirillakhmetov.billiardbattle.server.service;
 
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.server.dao.PlayerDao;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Player;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.server.dao.PlayerDao;
 
 import java.util.Optional;
 

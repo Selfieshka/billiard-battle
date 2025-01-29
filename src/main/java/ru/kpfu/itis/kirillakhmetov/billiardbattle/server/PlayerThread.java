@@ -7,9 +7,6 @@ import ru.kpfu.itis.kirillakhmetov.billiardbattle.server.service.PlayerService;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
-import java.net.Socket;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,26 +15,22 @@ import java.util.Optional;
 public class PlayerThread implements Runnable {
     @Getter
     @Setter
-    private PrintWriter outToClient = null;
+    private PrintWriter outToClient;
     @Getter
     @Setter
     private PrintWriter outToMyClient;
     @Getter
     @Setter
     private PlayerData thisPlayer;
-    private BufferedReader inFromClient;
-    private Socket socket;
-    private static boolean turn = false;
-    private ResultSet rs;
-    private Statement st;
-    private static ArrayList<PlayerThread> playerThreads = new ArrayList<>();
-    private PlayerService playerService = new PlayerService();
+    private final BufferedReader inFromClient;
+    private static boolean turn;
+    private static final ArrayList<PlayerThread> playerThreads = new ArrayList<>();
+    private final PlayerService playerService;
 
-    public PlayerThread(BufferedReader inFromClient, Socket socket, PrintWriter outToMyClient, Statement st) {
+    public PlayerThread(BufferedReader inFromClient, PrintWriter outToMyClient) {
         this.inFromClient = inFromClient;
-        this.socket = socket;
         this.outToMyClient = outToMyClient;
-        this.st = st;
+        playerService = new PlayerService();
         thisPlayer = new PlayerData();
     }
 
@@ -55,7 +48,7 @@ public class PlayerThread implements Runnable {
                         System.out.println(str.get(1) + " wins.. " + str.get(2) + " loses..");
                         updateMoneyAfterEndGame(str.get(1), str.get(2), Integer.parseInt(str.get(3)));
                     }
-                    //second case assign turns
+                    // Отправка первому игроку информации о втором игроке и старт игры
                     else if (str.get(0).compareTo("login2") == 0) {
                         if (turn) {
                             sentence += "#true";
@@ -66,12 +59,12 @@ public class PlayerThread implements Runnable {
                         }
                         outToClient.println(sentence);
                     }
-                    //third case login koraw
+                    // Вход
                     else if (str.get(0).compareTo("login") == 0) {
                         System.out.println(str);
                         signIn(str.get(1), str.get(2));
                     }
-                    //fourth case sign up koraw
+                    // Регистрация
                     else if (str.get(0).compareTo("signup") == 0) {
                         signUp(str.get(1), str.get(2), str.get(3));
                     }
@@ -83,27 +76,31 @@ public class PlayerThread implements Runnable {
 //                    else if (str.get(0).compareTo("leaderboard") == 0) {
 //                        sendLeaderBoard();
 //                    }
-                    //next case active player list pathaw
+                    // Отправка активных игроков
                     else if (str.get(0).compareTo("active") == 0) {
                         sendActivePlayers(str.get(1));
                     }
-                    //Next case porer player er kache info pathaw khelte parbe ki na
+                    // Проверяем, может ли выбранный игрок сыграть на n-ое количество денег
                     else if (str.get(0).compareTo("canPlay") == 0) {
                         sendOtherPlayer(str.get(1), Integer.parseInt(str.get(2)));
                     }
-                    //Next case reject msg pass kora
+                    // Отмена приглашения в игру
                     else if (str.get(0).compareTo("reject") == 0) {
                         for (PlayerThread playerThread : playerThreads) {
                             if (playerThread.getThisPlayer().getName().compareTo(str.get(1)) == 0) {
                                 playerThread.getOutToMyClient().println(sentence);
                             }
                         }
-                    } else if (str.get(0).compareTo("play") == 0) {
-                        khelasuru(str.get(1), Integer.parseInt(str.get(2)));
-                    } else if (str.get(0).compareTo("logout") == 0) {
-                        thisPlayer.setLoggedin(false);
                     }
-                    //othoba khela colche onno joner kache pathaw
+                    // Устанавливаем соединения между двумя игроками
+                    else if (str.get(0).compareTo("play") == 0) {
+                        setupGameSession(str.get(1), Integer.parseInt(str.get(2)));
+                    }
+                    // Выход из аккаунта
+                    else if (str.get(0).compareTo("logout") == 0) {
+                        thisPlayer.setLoggedIn(false);
+                    }
+                    // Некорректный запрос отправляем обратно
                     else {
                         outToClient.println(sentence);
                     }
@@ -115,9 +112,9 @@ public class PlayerThread implements Runnable {
         }
     }
 
-    private void khelasuru(String opponent, int bet) {
+    private void setupGameSession(String opponent, int bet) {
         for (PlayerThread playerThread : playerThreads) {
-            if (playerThread.getThisPlayer().getName().compareTo(opponent) == 0 && playerThread.getThisPlayer().isLoggedin()) {
+            if (playerThread.getThisPlayer().getName().compareTo(opponent) == 0 && playerThread.getThisPlayer().isLoggedIn()) {
                 outToClient = playerThread.getOutToMyClient();
                 playerThread.setOutToClient(outToMyClient);
                 thisPlayer.setPlaying(true);
@@ -129,30 +126,30 @@ public class PlayerThread implements Runnable {
         }
     }
 
-    private void sendOtherPlayer(String name, int money) throws Exception {
-        String cmd = "SELECT * FROM player where name='" + name + "'";
-        rs = st.executeQuery(cmd);
-        if (rs.next()) {
-            System.out.println(2);
-            int m = rs.getInt("money");
-            if (m < money) {
-                outToMyClient.println("canPlay#false#" + m);
+    private void sendOtherPlayer(String name, int money) {
+        Optional<Player> playerFromDb = playerService.getByName(name);
+        if (playerFromDb.isPresent()) {
+            Player player = playerFromDb.get();
+            if (player.getBalance() < money) {
+                outToMyClient.println("canPlay#false#" + money);
             } else {
                 for (PlayerThread playerThread : playerThreads) {
-                    if (playerThread.getThisPlayer().getName().compareTo(name) == 0 && playerThread.getThisPlayer().isLoggedin()) {
+                    if (playerThread.getThisPlayer().getName().compareTo(name) == 0 && playerThread.getThisPlayer().isLoggedIn()) {
                         System.out.println("canPlay#" + thisPlayer.getName() + "#" + money);
                         playerThread.getOutToMyClient().println("canPlay#" + thisPlayer.getName() + "#" + money);
                         break;
                     }
                 }
             }
+        } else {
+            outToMyClient.println("canPlay#false#" + money);
         }
     }
 
     private void sendActivePlayers(String username) {
         outToMyClient.println("startActive#");
         for (PlayerThread playerThread : playerThreads) {
-            if (playerThread.getThisPlayer().isLoggedin() && playerThread.getThisPlayer().getName().compareTo(username) != 0 && !playerThread.getThisPlayer().isPlaying()) {
+            if (playerThread.getThisPlayer().isLoggedIn() && playerThread.getThisPlayer().getName().compareTo(username) != 0 && !playerThread.getThisPlayer().isPlaying()) {
                 outToMyClient.println("active#" + playerThread.getThisPlayer().getName());
             }
         }
@@ -232,7 +229,7 @@ public class PlayerThread implements Runnable {
 
     private void signIn(String username, String password) {
         for (PlayerThread playerThread : playerThreads) {
-            if (playerThread.getThisPlayer().getName().compareTo(username) == 0 && playerThread.getThisPlayer().isLoggedin()) {
+            if (playerThread.getThisPlayer().getName().compareTo(username) == 0 && playerThread.getThisPlayer().isLoggedIn()) {
                 outToMyClient.println("login#false#onno");
                 return;
             }
@@ -247,7 +244,7 @@ public class PlayerThread implements Runnable {
                         .pass(player.getPassword())
                         .fbID("0")
                         .money(player.getBalance())
-                        .loggedin(true)
+                        .loggedIn(true)
                         .build();
                 outToMyClient.println("login#" + player.getName() + "#" + 0 + "#" + player.getBalance());
             }

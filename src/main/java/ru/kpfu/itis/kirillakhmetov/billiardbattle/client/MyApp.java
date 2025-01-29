@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene.GameScene;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene.MenuScene;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.server.entity.ServerProperties;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class MyApp extends Application {
     @Override
     public void start(Stage stage) {
         try {
-            clientSocket = new Socket("localhost", 5123);
+            clientSocket = new Socket(ServerProperties.HOST, ServerProperties.PORT);
             outToServer = new PrintWriter(clientSocket.getOutputStream(), true);
             inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         } catch (IOException e) {
