@@ -3,6 +3,7 @@ package ru.kpfu.itis.kirillakhmetov.billiardbattle.server;
 import lombok.Getter;
 import lombok.Setter;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Player;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.server.entity.PlayerData;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.server.service.PlayerService;
 
 import java.io.BufferedReader;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
 
 public class PlayerThread implements Runnable {
     @Getter
@@ -49,7 +51,7 @@ public class PlayerThread implements Runnable {
                         updateMoneyAfterEndGame(str.get(1), str.get(2), Integer.parseInt(str.get(3)));
                     }
                     // Отправка первому игроку информации о втором игроке и старт игры
-                    else if (str.get(0).compareTo("login2") == 0) {
+                    else if (str.get(0).equals("login2")) {
                         if (turn) {
                             sentence += "#true";
                             turn = false;
@@ -60,32 +62,24 @@ public class PlayerThread implements Runnable {
                         outToClient.println(sentence);
                     }
                     // Вход
-                    else if (str.get(0).compareTo("login") == 0) {
+                    else if (str.get(0).equals("login")) {
                         System.out.println(str);
                         signIn(str.get(1), str.get(2));
                     }
                     // Регистрация
-                    else if (str.get(0).compareTo("signup") == 0) {
+                    else if (str.get(0).equals("signup")) {
                         signUp(str.get(1), str.get(2), str.get(3));
                     }
-//                    //next case profile info pathaw
-//                    else if (str.get(0).compareTo("profile") == 0) {
-//                        showProfile(str.get(1));
-//                    }
-//                    //next case leaderboard pathaw
-//                    else if (str.get(0).compareTo("leaderboard") == 0) {
-//                        sendLeaderBoard();
-//                    }
                     // Отправка активных игроков
-                    else if (str.get(0).compareTo("active") == 0) {
+                    else if (str.get(0).equals("active")) {
                         sendActivePlayers(str.get(1));
                     }
                     // Проверяем, может ли выбранный игрок сыграть на n-ое количество денег
-                    else if (str.get(0).compareTo("canPlay") == 0) {
+                    else if (str.get(0).equals("canPlay")) {
                         sendOtherPlayer(str.get(1), Integer.parseInt(str.get(2)));
                     }
                     // Отмена приглашения в игру
-                    else if (str.get(0).compareTo("reject") == 0) {
+                    else if (str.get(0).equals("reject")) {
                         for (PlayerThread playerThread : playerThreads) {
                             if (playerThread.getThisPlayer().getName().compareTo(str.get(1)) == 0) {
                                 playerThread.getOutToMyClient().println(sentence);
@@ -93,11 +87,11 @@ public class PlayerThread implements Runnable {
                         }
                     }
                     // Устанавливаем соединения между двумя игроками
-                    else if (str.get(0).compareTo("play") == 0) {
+                    else if (str.get(0).equals("play")) {
                         setupGameSession(str.get(1), Integer.parseInt(str.get(2)));
                     }
                     // Выход из аккаунта
-                    else if (str.get(0).compareTo("logout") == 0) {
+                    else if (str.get(0).equals("logout")) {
                         thisPlayer.setLoggedIn(false);
                     }
                     // Некорректный запрос отправляем обратно
@@ -105,7 +99,6 @@ public class PlayerThread implements Runnable {
                         outToClient.println(sentence);
                     }
                 }
-
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -158,36 +151,6 @@ public class PlayerThread implements Runnable {
 
     private void updateMoneyAfterEndGame(String player1, String player2, int bet) {
         playerService.updateMoney(player1, player2, bet);
-//        String cmd = "SELECT * FROM player where Name='" + player1 + "'";
-//        rs = st.executeQuery(cmd);
-//
-//        if (rs.next()) {
-//            int gamePlayed = rs.getInt("GamesPlayed");
-//            gamePlayed += 1;
-//            int gameWon = rs.getInt("GamesWon");
-//            gameWon += 1;
-//            int m = rs.getInt("Money");
-//            m += bet;
-//            String cmd2 = "UPDATE player SET GamesPlayed='" + gamePlayed + "' WHERE Name = '" + player1 + "'";
-//            st.executeUpdate(cmd2);
-//            String cmd3 = "UPDATE player SET GamesWon='" + gameWon + "' WHERE Name = '" + player1 + "'";
-//            st.executeUpdate(cmd3);
-//            String cmd7 = "UPDATE player SET Money='" + m + "' WHERE Name = '" + player1 + "'";
-//            st.executeUpdate(cmd7);
-//        }
-//
-//        String cmd4 = "SELECT * FROM player where Name='" + player2 + "'";
-//        rs = st.executeQuery(cmd4);
-//        if (rs.next()) {
-//            int gamePlayed = rs.getInt("GamesPlayed");
-//            gamePlayed += 1;
-//            int m = rs.getInt("Money");
-//            m -= bet;
-//            String cmd5 = "UPDATE player SET GamesPlayed='" + gamePlayed + "' WHERE Name = '" + player2 + "'";
-//            st.executeUpdate(cmd5);
-//            String cmd8 = "UPDATE player SET Money='" + m + "' WHERE Name = '" + player2 + "'";
-//            st.executeUpdate(cmd8);
-//        }
         thisPlayer.setPlaying(false);
         for (PlayerThread playerThread : playerThreads) {
             if (playerThread.getThisPlayer().getName().compareTo(player2) == 0) {
@@ -195,37 +158,6 @@ public class PlayerThread implements Runnable {
             }
         }
     }
-
-//    private void sendLeaderBoard() throws Exception {
-//        outToMyClient.println("start#");
-//        String cmd = "SELECT * FROM player";
-//        rs = st.executeQuery(cmd);
-//        while (rs.next()) {
-//            String name = rs.getString("Name");
-//            int gamePlayed = rs.getInt("GamesPlayed");
-//            int gameWon = rs.getInt("GamesWon");
-//            int money = rs.getInt("Money");
-//            outToMyClient.println("leaderboard#" + name + "#" + gamePlayed + "#" + gameWon + "#" + money);
-//
-//        }
-//        outToMyClient.println("#end");
-//    }
-
-//    private void showProfile(String username) throws Exception {
-//        String cmd = "SELECT * FROM player";
-//        rs = st.executeQuery(cmd);
-//        while (rs.next()) {
-//            String name = rs.getString("Name");
-//            String id = rs.getString("FacebookID");
-//            int gamePlayed = rs.getInt("GamesPlayed");
-//            int gameWon = rs.getInt("GamesWon");
-//            int money = rs.getInt("Money");
-//            if (name.compareTo(username) == 0) {
-//                outToMyClient.println("profile#" + id + "#" + gamePlayed + "#" + gameWon + "#" + money);
-//                break;
-//            }
-//        }
-//    }
 
     private void signIn(String username, String password) {
         for (PlayerThread playerThread : playerThreads) {
@@ -251,25 +183,6 @@ public class PlayerThread implements Runnable {
         } else {
             outToMyClient.println("login#false");
         }
-
-//        String cmd = "SELECT * FROM player";
-//        boolean x = false;
-//        rs = st.executeQuery(cmd);
-//        while (rs.next()) {
-//            String name = rs.getString("name");
-//            String pass = rs.getString("password");
-////            String id = rs.getString("FacebookID");
-//            int money = rs.getInt("money");
-//            if (name.compareTo(username) == 0 && pass.compareTo(password) == 0) {
-//                outToMyClient.println("login#" + username + "#" + 0 + "#" + money);
-//                thisPlayer = new PlayerData(name, pass, "0", money, true);
-//                x = true;
-//                break;
-//            }
-//        }
-//        if (!x) {
-//            outToMyClient.println("login#false");
-//        }
     }
 
     private void signUp(String username, String password, String fbID) {
@@ -280,22 +193,6 @@ public class PlayerThread implements Runnable {
         } else {
             outToMyClient.println("signup#false");
         }
-//        boolean x = true;
-//        String cmd = "SELECT * FROM player";
-//        rs = st.executeQuery(cmd);
-//        while (rs.next()) {
-//            String name = rs.getString("Name");
-//            if (name.compareTo(username) == 0) {
-//                outToMyClient.println("signup#false");
-//                x = false;
-//                break;
-//            }
-//        }
-//        if (x) {
-//            outToMyClient.println("signup#true");
-//            String cmd1 = "INSERT INTO player (Name,Password,FacebookID,GamesPlayed,GamesWon,Money) VALUES ('" + username + "','" + password + "','" + fbID + "', '" + 0 + "','" + 0 + "','" + 100 + "')";
-//            st.executeUpdate(cmd1);
-//        }
     }
 
     public void addThread(PlayerThread pt) {

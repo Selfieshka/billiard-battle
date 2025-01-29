@@ -1,4 +1,4 @@
-package ru.kpfu.itis.kirillakhmetov.billiardbattle.server;
+package ru.kpfu.itis.kirillakhmetov.billiardbattle.server.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
