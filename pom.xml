@@ -65,7 +65,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                ru.kpfu.itis.kirillakhmetov.billiardbattle/ru.kpfu.itis.kirillakhmetov.billiardbattle.client.MyApp
+                                ru.kpfu.itis.kirillakhmetov.billiardbattle/ru.kpfu.itis.kirillakhmetov.billiardbattle.client.BilliardBattleApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
