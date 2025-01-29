@@ -17,8 +17,8 @@ public class PlayerService {
         return false;
     }
 
-    public Optional<Player> getByName(String name) {
-        return playerDao.findByName(name);
+    public Optional<Player> getByName(String username) {
+        return playerDao.findByName(username);
     }
 
     public void signUp(String username, String password) {
@@ -28,4 +28,7 @@ public class PlayerService {
                 .build());
     }
 
+    public void updateMoney(String username1, String username2, int money) {
+        playerDao.updateMoneyByName(username1, username2, money);
+    }
 }

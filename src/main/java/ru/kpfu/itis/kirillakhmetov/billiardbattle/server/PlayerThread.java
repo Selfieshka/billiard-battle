@@ -51,12 +51,9 @@ public class PlayerThread implements Runnable {
                             .filter(val -> !val.isEmpty())
                             .toList();
 
-                    //done
-                    //now check cases
-                    //first case if the game is over
                     if (sentence.charAt(0) == 'W') {
                         System.out.println(str.get(1) + " wins.. " + str.get(2) + " loses..");
-                        updateDatabase(str.get(1), str.get(2), Integer.parseInt(str.get(3)));
+                        updateMoneyAfterEndGame(str.get(1), str.get(2), Integer.parseInt(str.get(3)));
                     }
                     //second case assign turns
                     else if (str.get(0).compareTo("login2") == 0) {
@@ -78,10 +75,10 @@ public class PlayerThread implements Runnable {
                     else if (str.get(0).compareTo("signup") == 0) {
                         signUp(str.get(1), str.get(2), str.get(3));
                     }
-                    //next case profile info pathaw
-                    else if (str.get(0).compareTo("profile") == 0) {
-                        showProfile(str.get(1));
-                    }
+//                    //next case profile info pathaw
+//                    else if (str.get(0).compareTo("profile") == 0) {
+//                        showProfile(str.get(1));
+//                    }
 //                    //next case leaderboard pathaw
 //                    else if (str.get(0).compareTo("leaderboard") == 0) {
 //                        sendLeaderBoard();
@@ -141,10 +138,10 @@ public class PlayerThread implements Runnable {
             if (m < money) {
                 outToMyClient.println("canPlay#false#" + m);
             } else {
-                for (int i = 0; i < playerThreads.size(); i++) {
-                    if (playerThreads.get(i).getThisPlayer().getName().compareTo(name) == 0 && playerThreads.get(i).getThisPlayer().isLoggedin()) {
+                for (PlayerThread playerThread : playerThreads) {
+                    if (playerThread.getThisPlayer().getName().compareTo(name) == 0 && playerThread.getThisPlayer().isLoggedin()) {
                         System.out.println("canPlay#" + thisPlayer.getName() + "#" + money);
-                        playerThreads.get(i).getOutToMyClient().println("canPlay#" + thisPlayer.getName() + "#" + money);
+                        playerThread.getOutToMyClient().println("canPlay#" + thisPlayer.getName() + "#" + money);
                         break;
                     }
                 }
@@ -154,53 +151,52 @@ public class PlayerThread implements Runnable {
 
     private void sendActivePlayers(String username) {
         outToMyClient.println("startActive#");
-        for (int i = 0; i < playerThreads.size(); i++) {
-            if (playerThreads.get(i).getThisPlayer().isLoggedin() && playerThreads.get(i).getThisPlayer().getName().compareTo(username) != 0 && !playerThreads.get(i).getThisPlayer().isPlaying()) {
-                outToMyClient.println("active#" + playerThreads.get(i).getThisPlayer().getName());
+        for (PlayerThread playerThread : playerThreads) {
+            if (playerThread.getThisPlayer().isLoggedin() && playerThread.getThisPlayer().getName().compareTo(username) != 0 && !playerThread.getThisPlayer().isPlaying()) {
+                outToMyClient.println("active#" + playerThread.getThisPlayer().getName());
             }
         }
         outToMyClient.println("#endActive");
     }
 
-    private void updateDatabase(String player1, String player2, int bet) throws Exception {
-        String cmd = "SELECT * FROM player where Name='" + player1 + "'";
-        rs = st.executeQuery(cmd);
-
-        if (rs.next()) {
-            int gamePlayed = rs.getInt("GamesPlayed");
-            gamePlayed += 1;
-            int gameWon = rs.getInt("GamesWon");
-            gameWon += 1;
-            int m = rs.getInt("Money");
-            m += bet;
-            String cmd2 = "UPDATE player SET GamesPlayed='" + gamePlayed + "' WHERE Name = '" + player1 + "'";
-            st.executeUpdate(cmd2);
-            String cmd3 = "UPDATE player SET GamesWon='" + gameWon + "' WHERE Name = '" + player1 + "'";
-            st.executeUpdate(cmd3);
-            String cmd7 = "UPDATE player SET Money='" + m + "' WHERE Name = '" + player1 + "'";
-            st.executeUpdate(cmd7);
-        }
-
-        String cmd4 = "SELECT * FROM player where Name='" + player2 + "'";
-        rs = st.executeQuery(cmd4);
-        if (rs.next()) {
-            int gamePlayed = rs.getInt("GamesPlayed");
-            gamePlayed += 1;
-            int m = rs.getInt("Money");
-            m -= bet;
-            String cmd5 = "UPDATE player SET GamesPlayed='" + gamePlayed + "' WHERE Name = '" + player2 + "'";
-            st.executeUpdate(cmd5);
-            String cmd8 = "UPDATE player SET Money='" + m + "' WHERE Name = '" + player2 + "'";
-            st.executeUpdate(cmd8);
-        }
+    private void updateMoneyAfterEndGame(String player1, String player2, int bet) {
+        playerService.updateMoney(player1, player2, bet);
+//        String cmd = "SELECT * FROM player where Name='" + player1 + "'";
+//        rs = st.executeQuery(cmd);
+//
+//        if (rs.next()) {
+//            int gamePlayed = rs.getInt("GamesPlayed");
+//            gamePlayed += 1;
+//            int gameWon = rs.getInt("GamesWon");
+//            gameWon += 1;
+//            int m = rs.getInt("Money");
+//            m += bet;
+//            String cmd2 = "UPDATE player SET GamesPlayed='" + gamePlayed + "' WHERE Name = '" + player1 + "'";
+//            st.executeUpdate(cmd2);
+//            String cmd3 = "UPDATE player SET GamesWon='" + gameWon + "' WHERE Name = '" + player1 + "'";
+//            st.executeUpdate(cmd3);
+//            String cmd7 = "UPDATE player SET Money='" + m + "' WHERE Name = '" + player1 + "'";
+//            st.executeUpdate(cmd7);
+//        }
+//
+//        String cmd4 = "SELECT * FROM player where Name='" + player2 + "'";
+//        rs = st.executeQuery(cmd4);
+//        if (rs.next()) {
+//            int gamePlayed = rs.getInt("GamesPlayed");
+//            gamePlayed += 1;
+//            int m = rs.getInt("Money");
+//            m -= bet;
+//            String cmd5 = "UPDATE player SET GamesPlayed='" + gamePlayed + "' WHERE Name = '" + player2 + "'";
+//            st.executeUpdate(cmd5);
+//            String cmd8 = "UPDATE player SET Money='" + m + "' WHERE Name = '" + player2 + "'";
+//            st.executeUpdate(cmd8);
+//        }
         thisPlayer.setPlaying(false);
-        for (int i = 0; i < playerThreads.size(); i++) {
-            if (playerThreads.get(i).getThisPlayer().getName().compareTo(player2) == 0) {
-                playerThreads.get(i).getThisPlayer().setPlaying(false);
+        for (PlayerThread playerThread : playerThreads) {
+            if (playerThread.getThisPlayer().getName().compareTo(player2) == 0) {
+                playerThread.getThisPlayer().setPlaying(false);
             }
         }
-
-
     }
 
 //    private void sendLeaderBoard() throws Exception {
@@ -218,21 +214,21 @@ public class PlayerThread implements Runnable {
 //        outToMyClient.println("#end");
 //    }
 
-    private void showProfile(String username) throws Exception {
-        String cmd = "SELECT * FROM player";
-        rs = st.executeQuery(cmd);
-        while (rs.next()) {
-            String name = rs.getString("Name");
-            String id = rs.getString("FacebookID");
-            int gamePlayed = rs.getInt("GamesPlayed");
-            int gameWon = rs.getInt("GamesWon");
-            int money = rs.getInt("Money");
-            if (name.compareTo(username) == 0) {
-                outToMyClient.println("profile#" + id + "#" + gamePlayed + "#" + gameWon + "#" + money);
-                break;
-            }
-        }
-    }
+//    private void showProfile(String username) throws Exception {
+//        String cmd = "SELECT * FROM player";
+//        rs = st.executeQuery(cmd);
+//        while (rs.next()) {
+//            String name = rs.getString("Name");
+//            String id = rs.getString("FacebookID");
+//            int gamePlayed = rs.getInt("GamesPlayed");
+//            int gameWon = rs.getInt("GamesWon");
+//            int money = rs.getInt("Money");
+//            if (name.compareTo(username) == 0) {
+//                outToMyClient.println("profile#" + id + "#" + gamePlayed + "#" + gameWon + "#" + money);
+//                break;
+//            }
+//        }
+//    }
 
     private void signIn(String username, String password) {
         for (PlayerThread playerThread : playerThreads) {
@@ -279,7 +275,7 @@ public class PlayerThread implements Runnable {
 //        }
     }
 
-    private void signUp(String username, String password, String fbID) throws Exception {
+    private void signUp(String username, String password, String fbID) {
         Optional<Player> playerFromDb = playerService.getByName(username);
         if (playerFromDb.isEmpty()) {
             playerService.signUp(username, password);
