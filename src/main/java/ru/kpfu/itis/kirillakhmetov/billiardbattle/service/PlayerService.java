@@ -1,0 +1,31 @@
+package ru.kpfu.itis.kirillakhmetov.billiardbattle.service;
+
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.dao.PlayerDao;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.entity.Player;
+
+import java.util.Optional;
+
+public class PlayerService {
+    public final PlayerDao playerDao = new PlayerDao();
+
+    public boolean signIn(String name, String password) {
+        Optional<Player> playerFromDb = playerDao.findByName(name);
+        if (playerFromDb.isPresent()) {
+            Player player = playerFromDb.get();
+            return player.getPassword().equals(password);
+        }
+        return false;
+    }
+
+    public Optional<Player> getByName(String name) {
+        return playerDao.findByName(name);
+    }
+
+    public void signUp(String username, String password) {
+        playerDao.save(Player.builder()
+                .name(username)
+                .password(password)
+                .build());
+    }
+
+}
