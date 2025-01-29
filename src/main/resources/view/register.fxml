@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.*?>
-<Pane xmlns:fx="http://javafx.com/fxml" fx:id="parent" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+<Pane xmlns:fx="http://javafx.com/fxml" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
       minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0"
       style="-fx-background-color: #005B26;"
       fx:controller="ru.kpfu.itis.kirillakhmetov.billiardbattle.client.controller.RegisterController">
@@ -22,21 +22,21 @@
                 <Font size="20.0"/>
             </font>
         </TextField>
-        <PasswordField fx:id="pass" alignment="BASELINE_LEFT" prefHeight="50.0" prefWidth="500.0"
+        <PasswordField fx:id="password" alignment="BASELINE_LEFT" prefHeight="50.0" prefWidth="500.0"
                        promptText="Введите пароль"
                        style="-fx-background-color: transparent; -fx-border-color: white; -fx-prompt-text-fill: #dedede; -fx-text-fill: white; -fx-border-radius: 10;">
             <font>
                 <Font size="20.0"/>
             </font>
         </PasswordField>
-        <PasswordField fx:id="repass" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="235.0" prefHeight="50.0"
+        <PasswordField fx:id="repassword" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="235.0" prefHeight="50.0"
                        prefWidth="500.0" promptText="Повторите пароль"
                        style="-fx-background-color: transparent; -fx-border-color: white; -fx-prompt-text-fill: #dedede; -fx-text-fill: white; -fx-border-radius: 10;">
             <font>
                 <Font size="20.0"/>
             </font>
         </PasswordField>
-        <Button fx:id="signup" mnemonicParsing="false" prefHeight="36.0" prefWidth="182.0"
+        <Button fx:id="signUp" mnemonicParsing="false" prefHeight="36.0" prefWidth="182.0"
                 style="-fx-background-color: #FFD700; -fx-text-fill: black; -fx-border-radius: 10; -fx-background-radius: 10;"
                 text="Зарегистрироваться" textFill="WHITE">
             <font>
