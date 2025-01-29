@@ -9,12 +9,15 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.GameParameters;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.BilliardBattleApplication;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.SingleBall;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Vector;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene.GameScene;
 
 import java.util.Objects;
+
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.GameParameters.BALL_RADIUS;
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.GameParameters.CUE_BALL_VELOCITY;
 
 
 public class GameController {
@@ -31,10 +34,8 @@ public class GameController {
     @FXML
     public ImageView stick;
     @FXML
-    public Line dirLine1;
-
-    double ang;
-
+    public Line predictedLine;
+    private double ang;
     private double xp = -1, yp = -1;
 
     @FXML
@@ -49,51 +50,59 @@ public class GameController {
         border4.setImage(border2Img);
     }
 
-    public void Moveline(MouseEvent event) {
-        if (GameScene.isIsTurn() && !GameScene.isGameOver() && !GameScene.isGamePause() && GameScene.getPlayer1().isMyturn()) {
-            line.setVisible(true);
-            circle.setVisible(true);
-            line.setStroke(Color.WHITE);
-            circle.setStroke(Color.WHITE);
-            double x2 = event.getSceneX(), y2 = event.getSceneY();
+    public void moveLine(MouseEvent event) {
+        if (GameScene.isIsTurn() && !GameScene.isGameOver()
+                && !GameScene.isGamePause() && GameScene.getPlayer1().isMyturn()) {
             double x1 = GameScene.getCueBall().getPosition().getX(), y1 = GameScene.getCueBall().getPosition().getY();
+            double x2 = event.getSceneX(), y2 = event.getSceneY();
+
+            line.setVisible(true);
+            line.setStroke(Color.WHITE);
             line.setStartX(x1);
             line.setStartY(y1);
             line.setEndX(x2);
             line.setEndY(y2);
+
             circle.setCenterX(x2);
+            circle.setVisible(true);
+            circle.setStroke(Color.WHITE);
             circle.setCenterY(y2);
-            circle.setRadius(GameParameters.BALL_RADIUS);
-            int flag = 0;
+            circle.setRadius(BALL_RADIUS);
+
+            boolean flag = false;
             for (int i = 0; i < 16; i++) {
                 if (collides(circle, GameScene.ball[i])) {
-                    flag = 1;
+                    flag = true;
                     break;
                 }
             }
-            if (flag == 1) {
-                dirLine1.setVisible(true);
-            } else dirLine1.setVisible(false);
+            predictedLine.setVisible(flag);
+
             for (int i = 1; i < 16; i++) {
                 if (collides(circle, GameScene.ball[i])) {
-                    double cueBallVelocity = 40;
+                    double cueBallVelocity = CUE_BALL_VELOCITY;
                     double angle = Math.atan((y2 - y1) / (x2 - x1));
                     if (x2 < x1) cueBallVelocity = -cueBallVelocity;
+
                     Vector position = new Vector(circle.getCenterX(), circle.getCenterY());
-                    Vector velocity = new Vector(cueBallVelocity * Math.cos(angle), cueBallVelocity * Math.sin(angle));
+                    Vector velocity = new Vector(cueBallVelocity * Math.cos(angle),
+                            cueBallVelocity * Math.sin(angle));
                     Vector nv2 = position.sub(GameScene.ball[i].getPosition());
+
                     nv2.normalize();
                     nv2.multiply(velocity.dot(nv2));
                     Vector nv2b = GameScene.ball[i].getPosition().sub(position);
                     nv2b.normalize();
                     nv2b.multiply(GameScene.ball[i].getVelocity().dot(nv2b));
                     Vector nv1b = GameScene.ball[i].getVelocity().sub(nv2b);
-                    double p = GameScene.ball[i].getSphere().getLayoutX(), q = GameScene.ball[i].getSphere().getLayoutY();
+                    double p = GameScene.ball[i].getSphere().getLayoutX();
+                    double q = GameScene.ball[i].getSphere().getLayoutY();
                     Vector v = nv2.add(nv1b);
-                    dirLine1.setStartX(p);
-                    dirLine1.setStartY(q);
-                    dirLine1.setEndX(p + v.getX());
-                    dirLine1.setEndY(q + v.getY());
+
+                    predictedLine.setStartX(p);
+                    predictedLine.setStartY(q);
+                    predictedLine.setEndX(p + v.getX());
+                    predictedLine.setEndY(q + v.getY());
                 }
             }
 
@@ -101,10 +110,12 @@ public class GameController {
             stick.setLayoutX(x1 - (346 + 36));
             stick.setLayoutY(y1 - 14);
             ang = Math.toDegrees(Math.atan((y2 - y1) / (x2 - x1)));
+
             if (x2 <= x1) {
                 ang = 180 - ang;
                 ang = -ang;
             }
+
             stick.setRotate(ang);
             double mid_x = stick.getLayoutX() + stick.getFitWidth() / 2;
             double mid_y = stick.getLayoutY() + stick.getFitHeight() / 2;
@@ -115,8 +126,6 @@ public class GameController {
             double pos_y = now_y - stick.getFitHeight() / 2 + 4;
             stick.setLayoutX(pos_x);
             stick.setLayoutY(pos_y);
-
-
         }
     }
 
@@ -124,21 +133,20 @@ public class GameController {
         double x = circle.getCenterX() - b.getPosition().getX();
         double y = circle.getCenterY() - b.getPosition().getY();
         double dist = Math.sqrt(x * x + y * y);
-        if (dist - GameParameters.BALL_RADIUS * 2 <= 0 && dist - GameParameters.BALL_RADIUS >= -3) {
-
-            return true;
-        } else return false;
+        return dist - BALL_RADIUS * 2 <= 0 && dist - BALL_RADIUS >= -3;
     }
 
     public void released(MouseEvent event) {
-        if (GameScene.isIsTurn() && !GameScene.isGameOver() && !GameScene.isGamePause() && GameScene.getPlayer1().isMyturn()) {
+        if (GameScene.isIsTurn() && !GameScene.isGameOver()
+                && !GameScene.isGamePause() && GameScene.getPlayer1().isMyturn()) {
             double x = event.getSceneX();
             double y = event.getSceneY();
             xp = x;
             yp = y;
-//            Main.outToServer.println("st#" + (int) stick.getRotate() + "#" + (int) stick.getLayoutX() + "#" + (int) stick.getLayoutY());
+            BilliardBattleApplication.outToServer.println("st#" + (int) stick.getRotate()
+                    + "#" + (int) stick.getLayoutX()
+                    + "#" + (int) stick.getLayoutY());
         }
-
     }
 
     public void showVelocity() {
@@ -159,22 +167,18 @@ public class GameController {
             stick.setLayoutX(now_x - stick.getFitWidth() / 2);
             stick.setLayoutY(now_y - stick.getFitHeight() / 2);
         }
-
     }
 
     public void mereDaw() {
-        double cueBallVelocity = 0;
+        double cueBallVelocity;
         if (GameScene.isIsTurn() && !GameScene.isGameOver() && xp != -1 && yp != -1 && !GameScene.isGamePause() && GameScene.getPlayer1().isMyturn()) {
-
-            if (GameScene.getTurnNum() == 1 && !GameScene.isTurnOffSounds()) {
-//                SoundEffects.START.play();
-            }
             cueBallVelocity = velocitySlider.getValue();
             if (cueBallVelocity != 0) {
                 line.setVisible(false);
                 circle.setVisible(false);
                 velocitySlider.setValue(0);
                 velocityLabel.setText("0");
+
                 double angle = Math.atan((yp - GameScene.getCueBall().getPosition().getY()) / (xp - GameScene.getCueBall().getPosition().getX()));
                 if (xp < GameScene.getCueBall().getPosition().getX()) cueBallVelocity = -cueBallVelocity;
                 GameScene.setVelocity(cueBallVelocity * Math.cos(angle), cueBallVelocity * Math.sin(angle));
@@ -182,15 +186,12 @@ public class GameController {
                 xp = -1;
                 yp = -1;
                 stick.setVisible(false);
-//                Main.outToServer.println("stf");
-                dirLine1.setVisible(false);
+                BilliardBattleApplication.outToServer.println("stf");
+                predictedLine.setVisible(false);
             }
-
         } else {
             velocitySlider.setValue(0);
             velocityLabel.setText("0");
         }
     }
-
-
 }

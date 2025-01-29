@@ -63,7 +63,7 @@
             </fill>
         </Rectangle>
         <Rectangle arcHeight="5.0" arcWidth="5.0" height="440.0" layoutX="130.0" layoutY="154.0"
-                   onMouseDragReleased="#released" onMouseDragged="#Moveline" onMouseReleased="#released" stroke="BLACK"
+                   onMouseDragReleased="#released" onMouseDragged="#moveLine" onMouseReleased="#released" stroke="BLACK"
                    strokeType="INSIDE" strokeWidth="0.0" width="840.0">
             <fill>
                 <RadialGradient centerX="0.46590909090909094" centerY="0.49514563106796117"
@@ -373,7 +373,7 @@
                 </LinearGradient>
             </fill>
         </Rectangle>
-        <Arc fill="#ff1f1f00" layoutX="330.0" layoutY="377.0" length="200.0" onMouseDragged="#Moveline"
+        <Arc fill="#ff1f1f00" layoutX="330.0" layoutY="377.0" length="200.0" onMouseDragged="#moveLine"
              onMouseReleased="#released" opacity="0.62" radiusX="100.0" radiusY="100.0" startAngle="80.0"
              stroke="#eeeeee" strokeType="INSIDE"/>
         <Line fx:id="line" stroke="WHITE"/>
@@ -428,6 +428,6 @@
                 <Font name="System Bold Italic" size="18.0"/>
             </font>
         </Label>
-        <Line fx:id="dirLine1" stroke="WHITE" strokeWidth="2.0"/>
+        <Line fx:id="predictedLine" stroke="WHITE" strokeWidth="2.0"/>
     </children>
 </Pane>
