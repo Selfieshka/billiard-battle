@@ -6,15 +6,15 @@ module ru.kpfu.itis.kirillakhmetov.billiardbattle {
     requires java.sql;
     requires org.postgresql.jdbc;
 
-    exports ru.kpfu.itis.kirillakhmetov.billiardbattle.scene;
-    exports ru.kpfu.itis.kirillakhmetov.billiardbattle.controller;
-    exports ru.kpfu.itis.kirillakhmetov.billiardbattle.entity;
+    exports ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene;
+    exports ru.kpfu.itis.kirillakhmetov.billiardbattle.client.controller;
+    exports ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity;
     exports ru.kpfu.itis.kirillakhmetov.billiardbattle.client;
     exports ru.kpfu.itis.kirillakhmetov.billiardbattle.server;
 
-    opens ru.kpfu.itis.kirillakhmetov.billiardbattle.controller to javafx.fxml;
-    opens ru.kpfu.itis.kirillakhmetov.billiardbattle.view to javafx.fxml;
-    opens ru.kpfu.itis.kirillakhmetov.billiardbattle.scene to javafx.fxml;
+    opens ru.kpfu.itis.kirillakhmetov.billiardbattle.client.controller to javafx.fxml;
+    opens view to javafx.fxml;
+    opens ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene to javafx.fxml;
     opens ru.kpfu.itis.kirillakhmetov.billiardbattle.server to javafx.fxml;
-    opens ru.kpfu.itis.kirillakhmetov.billiardbattle.entity;
+    opens ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity;
 }

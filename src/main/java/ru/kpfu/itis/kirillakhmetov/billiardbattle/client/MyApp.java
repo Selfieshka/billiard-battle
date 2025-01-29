@@ -9,8 +9,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.scene.GameScene2;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.scene.MenuScene;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene.GameScene;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene.MenuScene;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,10 +48,10 @@ public class MyApp extends Application {
         Parent billiardParent;
         FXMLLoader billiardLoader;
         try {
-            loginParent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/ru/kpfu/itis/kirillakhmetov/billiardbattle/view/login.fxml")));
-            registerParent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/ru/kpfu/itis/kirillakhmetov/billiardbattle/view/register.fxml")));
+            loginParent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/login.fxml")));
+            registerParent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/register.fxml")));
 //            onlinePlayersParent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/ru/kpfu/itis/kirillakhmetov/billiardbattle/view/online-players.fxml")));
-            billiardLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("/ru/kpfu/itis/kirillakhmetov/billiardbattle/view/billiard-table.fxml")));
+            billiardLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("/view/billiard-table.fxml")));
             billiardParent = billiardLoader.load();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -73,10 +73,10 @@ public class MyApp extends Application {
 
         Group gameGroup = new Group();
         game = new Scene(gameGroup, 1100, 700, Color.rgb(51, 102, 153));
-        GameScene2 gameScene = null;
+        GameScene gameScene = null;
         try {
-            gameScene = new GameScene2(gameGroup, game, menu, billiardParent, window, outToServer, inFromServer, billiardLoader.getController());
-//            gameScene = new GameScene2(gameGroup, game, menu, billiardParent, window, billiardLoader.getController());
+            gameScene = new GameScene(gameGroup, game, menu, billiardParent, window, outToServer, inFromServer, billiardLoader.getController());
+//            gameScene = new GameScene(gameGroup, game, menu, billiardParent, window, billiardLoader.getController());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -106,9 +106,9 @@ public class MyApp extends Application {
                 alert.setContentText("You will lose the game if you leave!!");
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.get() == ButtonType.OK) {
-                    GameScene2.getPlayer2().setWin(true);
-                    GameScene2.getPlayer1().setWin(false);
-                    GameScene2.setGameOver(true);
+                    GameScene.getPlayer2().setWin(true);
+                    GameScene.getPlayer1().setWin(false);
+                    GameScene.setGameOver(true);
                     outToServer.println("Lt");
                     outToServer.println("logout");
                     window.close();

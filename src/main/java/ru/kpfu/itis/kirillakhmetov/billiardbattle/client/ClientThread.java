@@ -7,10 +7,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.controller.Controller;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.controller.OnlinePlayersController;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.entity.Vector2;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.scene.GameScene2;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.controller.GameController;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.controller.OnlinePlayersController;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Vector;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene.GameScene;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
@@ -21,10 +21,10 @@ import java.util.Optional;
 public class ClientThread implements Runnable {
     private PrintWriter outToServer;
     private BufferedReader inFromServer;
-    private Controller controller;
+    private GameController gameController;
 
-    public ClientThread(PrintWriter outToServer, BufferedReader inFromServer, Controller controller) throws Exception {
-        this.controller = controller;
+    public ClientThread(PrintWriter outToServer, BufferedReader inFromServer, GameController gameController) throws Exception {
+        this.gameController = gameController;
         this.outToServer = outToServer;
         this.inFromServer = inFromServer;
     }
@@ -48,19 +48,19 @@ public class ClientThread implements Runnable {
                         doubles[0] = Double.parseDouble(str.get(1));
                         doubles[1] = Double.parseDouble(str.get(2));
                         //System.out.println (doubles[0]+" "+doubles[1]);
-                        GameScene2.ball[0].setVelocity(doubles[0], doubles[1]);
+                        GameScene.ball[0].setVelocity(doubles[0], doubles[1]);
                     }
                     //this is cue stick move
                     else if (str.get(0).compareTo("st") == 0) {
-                        controller.stick.setVisible(true);
-                        controller.stick.setRotate(Double.parseDouble(str.get(1)));
-                        controller.stick.setLayoutX(Double.parseDouble(str.get(2)));
-                        controller.stick.setLayoutY(Double.parseDouble(str.get(3)));
+                        gameController.stick.setVisible(true);
+                        gameController.stick.setRotate(Double.parseDouble(str.get(1)));
+                        gameController.stick.setLayoutX(Double.parseDouble(str.get(2)));
+                        gameController.stick.setLayoutY(Double.parseDouble(str.get(3)));
                     }
 
                     //this is stick disable
                     else if (str.get(0).compareTo("stf") == 0) {
-                        controller.stick.setVisible(false);
+                        gameController.stick.setVisible(false);
                     }
                     //this is cue ball move
                     else if (str.get(0).compareTo("M") == 0) {
@@ -68,29 +68,29 @@ public class ClientThread implements Runnable {
                         double doubles[] = new double[2];
                         doubles[0] = Double.parseDouble(str.get(1));
                         doubles[1] = Double.parseDouble(str.get(2));
-                        GameScene2.ball[0].setPosition(new Vector2(doubles[0], doubles[1]));
+                        GameScene.ball[0].setPosition(new Vector(doubles[0], doubles[1]));
                     }
 
 
                     //this is left game true
                     else if (str.get(0).compareTo("Lt") == 0) {
-                        GameScene2.getPlayer1().setWin(true);
-                        GameScene2.getPlayer2().setWin(false);
-                        GameScene2.setGameOver(true);
+                        GameScene.getPlayer1().setWin(true);
+                        GameScene.getPlayer2().setWin(false);
+                        GameScene.setGameOver(true);
                     }
                     //this is breaking assign
                     else if (str.get(0).compareTo("login2") == 0) {
                         System.out.println(str);
-                        GameScene2.getPlayer2().setName(str.get(1));
-                        GameScene2.getPlayer2().setID(str.get(2));
-                        GameScene2.setImage2(str.get(2));
-                        GameScene2.setBet(Integer.parseInt(str.get(3)));
+                        GameScene.getPlayer2().setName(str.get(1));
+                        GameScene.getPlayer2().setID(str.get(2));
+                        GameScene.setImage2(str.get(2));
+                        GameScene.setBet(Integer.parseInt(str.get(3)));
                         if (str.get(4).compareTo("true") == 0) {
-                            GameScene2.getPlayer2().setMyturn(false);
-                            GameScene2.getPlayer1().setMyturn(true);
+                            GameScene.getPlayer2().setMyturn(false);
+                            GameScene.getPlayer1().setMyturn(true);
                         } else {
-                            GameScene2.getPlayer1().setMyturn(false);
-                            GameScene2.getPlayer2().setMyturn(true);
+                            GameScene.getPlayer1().setMyturn(false);
+                            GameScene.getPlayer2().setMyturn(true);
                         }
                         Platform.runLater(new Runnable() {
                             @Override
@@ -146,10 +146,10 @@ public class ClientThread implements Runnable {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            GameScene2.getPlayer1().setName(str.get(1));
-                            GameScene2.getPlayer1().setID(str.get(2));
-                            GameScene2.setImage1(str.get(2));
-                            GameScene2.getPlayer1().setBalance(Integer.parseInt(str.get(3)));
+                            GameScene.getPlayer1().setName(str.get(1));
+                            GameScene.getPlayer1().setID(str.get(2));
+                            GameScene.setImage1(str.get(2));
+                            GameScene.getPlayer1().setBalance(Integer.parseInt(str.get(3)));
                         }
                     }
                     //this is signup assign
@@ -184,7 +184,7 @@ public class ClientThread implements Runnable {
 //                        ProfileScene.gamesplayed = str.get(2);
 //                        ProfileScene.gameswon = str.get(3);
 //                        ProfileScene.money = str.get(4);
-//                        ProfileScene.name = GameScene2.getPlayer1().getName();
+//                        ProfileScene.name = GameScene.getPlayer1().getName();
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
@@ -230,7 +230,7 @@ public class ClientThread implements Runnable {
                             @Override
                             public void run() {
                                 try {
-                                    Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/ru/kpfu/itis/kirillakhmetov/billiardbattle/view/online-players.fxml")));
+                                    Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/online-players.fxml")));
                                     MyApp.onlinePlayers = new Scene(root);
                                     MyApp.window.setScene(MyApp.onlinePlayers);
                                 } catch (Exception e) {
@@ -291,6 +291,5 @@ public class ClientThread implements Runnable {
                 throw new RuntimeException(e);
             }
         }
-
     }
 }

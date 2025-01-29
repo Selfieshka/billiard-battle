@@ -2,8 +2,8 @@ package ru.kpfu.itis.kirillakhmetov.billiardbattle.server;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.entity.Player;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.service.PlayerService;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Player;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.server.service.PlayerService;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
