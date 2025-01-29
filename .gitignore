@@ -200,4 +200,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+#Properties
+application-dev.properties
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij,java,maven,git,windows
