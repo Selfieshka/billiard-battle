@@ -1,4 +1,4 @@
-package ru.kpfu.itis.kirillakhmetov.billiardbattle.server;
+package ru.kpfu.itis.kirillakhmetov.billiardbattle.server.util;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -39,54 +39,54 @@ public class PlayerThread implements Runnable {
     public void run() {
         while (true) {
             try {
-                String sentence = inFromClient.readLine();
-                if (sentence != null) {
-                    System.out.println("сообщение" + sentence);
-                    List<String> str = Arrays.stream(sentence.split("#"))
+                String request = inFromClient.readLine();
+                if (request != null) {
+                    System.out.println("FROM CLIENT:" + request);
+                    List<String> requestParts = Arrays.stream(request.split("#"))
                             .filter(val -> !val.isEmpty())
                             .toList();
 
-                    if (sentence.charAt(0) == 'W') {
-                        updateMoneyAfterEndGame(str.get(1), str.get(2), Integer.parseInt(str.get(3)));
+                    if (request.charAt(0) == 'W') {
+                        updateMoneyAfterEndGame(requestParts.get(1), requestParts.get(2), Integer.parseInt(requestParts.get(3)));
                     } else {
-                        switch (str.getFirst()) {
+                        switch (requestParts.getFirst()) {
                             // Отправка первому игроку информации о втором игроке и старт игры
                             case "login2":
                                 if (turn) {
-                                    sentence += "#true";
+                                    request += "#true";
                                     turn = false;
                                 } else {
-                                    sentence += "#false";
+                                    request += "#false";
                                     turn = true;
                                 }
-                                outToClient.println(sentence);
+                                outToClient.println(request);
                                 break;
                             // Вход
                             case "login":
-                                signIn(str.get(1), str.get(2));
+                                signIn(requestParts.get(1), requestParts.get(2));
                                 break;
                             // Регистрация
                             case "signup":
-                                signUp(str.get(1), str.get(2), str.get(3));
+                                signUp(requestParts.get(1), requestParts.get(2), requestParts.get(3));
                                 break;
                             // Отправка активных игроков
                             case "active":
-                                sendActivePlayers(str.get(1));
+                                sendActivePlayers(requestParts.get(1));
                                 break;
                             // Проверяем, может ли выбранный игрок сыграть на n-ое количество денег
                             case "canPlay":
-                                sendOtherPlayer(str.get(1), Integer.parseInt(str.get(2)));
+                                sendOtherPlayer(requestParts.get(1), Integer.parseInt(requestParts.get(2)));
                                 break;
                             // Отмена приглашения в игру
                             case "reject":
                                 for (PlayerThread playerThread : playerThreads) {
-                                    if (playerThread.getThisPlayer().getName().equals(str.get(1))) {
-                                        playerThread.getOutToMyClient().println(sentence);
+                                    if (playerThread.getThisPlayer().getName().equals(requestParts.get(1))) {
+                                        playerThread.getOutToMyClient().println(request);
                                     }
                                 }
                                 // Устанавливаем соединения между двумя игроками
                             case "play":
-                                setupGameSession(str.get(1), Integer.parseInt(str.get(2)));
+                                setupGameSession(requestParts.get(1), Integer.parseInt(requestParts.get(2)));
                                 break;
                             // Выход из аккаунта
                             case "logout":
@@ -94,7 +94,7 @@ public class PlayerThread implements Runnable {
                                 break;
                             // Некорректный запрос отправляем обратно
                             default:
-                                outToClient.println(sentence);
+                                outToClient.println(request);
                         }
                     }
                 }
@@ -171,13 +171,13 @@ public class PlayerThread implements Runnable {
             if (playerFromDb.isPresent()) {
                 Player player = playerFromDb.get();
                 thisPlayer = PlayerData.builder()
-                        .name(player.getName())
+                        .name(player.getUsername())
                         .pass(player.getPassword())
                         .fbID("0")
                         .money(player.getBalance())
                         .loggedIn(true)
                         .build();
-                outToMyClient.println("login#" + player.getName() + "#" + 0 + "#" + player.getBalance());
+                outToMyClient.println("login#" + player.getUsername() + "#" + 0 + "#" + player.getBalance());
             }
         } else {
             outToMyClient.println("login#false");

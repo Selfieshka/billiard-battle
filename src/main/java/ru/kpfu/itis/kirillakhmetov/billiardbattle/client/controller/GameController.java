@@ -10,7 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.BilliardBattleApplication;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.SingleBall;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Ball;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Vector;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene.GameScene;
 
@@ -52,7 +52,7 @@ public class GameController {
 
     public void moveLine(MouseEvent event) {
         if (GameScene.isIsTurn() && !GameScene.isGameOver()
-                && !GameScene.isGamePause() && GameScene.getPlayer1().isMyturn()) {
+                && !GameScene.isGamePause() && GameScene.getPlayer1().isMyTurn()) {
             double x1 = GameScene.getCueBall().getPosition().getX(), y1 = GameScene.getCueBall().getPosition().getY();
             double x2 = event.getSceneX(), y2 = event.getSceneY();
 
@@ -129,7 +129,7 @@ public class GameController {
         }
     }
 
-    private boolean collides(Circle circle, SingleBall b) {
+    private boolean collides(Circle circle, Ball b) {
         double x = circle.getCenterX() - b.getPosition().getX();
         double y = circle.getCenterY() - b.getPosition().getY();
         double dist = Math.sqrt(x * x + y * y);
@@ -138,7 +138,7 @@ public class GameController {
 
     public void released(MouseEvent event) {
         if (GameScene.isIsTurn() && !GameScene.isGameOver()
-                && !GameScene.isGamePause() && GameScene.getPlayer1().isMyturn()) {
+                && !GameScene.isGamePause() && GameScene.getPlayer1().isMyTurn()) {
             double x = event.getSceneX();
             double y = event.getSceneY();
             xp = x;
@@ -150,7 +150,7 @@ public class GameController {
     }
 
     public void showVelocity() {
-        if (!GameScene.isGameOver() && !GameScene.isGamePause() && GameScene.getPlayer1().isMyturn()) {
+        if (!GameScene.isGameOver() && !GameScene.isGamePause() && GameScene.getPlayer1().isMyTurn()) {
             velocityLabel.setText(String.valueOf(Math.floor(velocitySlider.getValue() / 30 * 100)));
             stick.setLayoutX(GameScene.getCueBall().getPosition().getX() - (346 + 36) - (Math.floor(velocitySlider.getValue() / 30 * 100)));
             stick.setLayoutY(GameScene.getCueBall().getPosition().getY() - (375 - 367));
@@ -171,7 +171,7 @@ public class GameController {
 
     public void mereDaw() {
         double cueBallVelocity;
-        if (GameScene.isIsTurn() && !GameScene.isGameOver() && xp != -1 && yp != -1 && !GameScene.isGamePause() && GameScene.getPlayer1().isMyturn()) {
+        if (GameScene.isIsTurn() && !GameScene.isGameOver() && xp != -1 && yp != -1 && !GameScene.isGamePause() && GameScene.getPlayer1().isMyTurn()) {
             cueBallVelocity = velocitySlider.getValue();
             if (cueBallVelocity != 0) {
                 line.setVisible(false);

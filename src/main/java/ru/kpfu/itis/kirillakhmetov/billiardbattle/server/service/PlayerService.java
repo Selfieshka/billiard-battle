@@ -23,7 +23,7 @@ public class PlayerService {
 
     public void signUp(String username, String password) {
         playerDao.save(Player.builder()
-                .name(username)
+                .username(username)
                 .password(password)
                 .build());
     }

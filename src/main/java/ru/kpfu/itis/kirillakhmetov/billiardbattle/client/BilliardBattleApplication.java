@@ -63,7 +63,7 @@ public class BilliardBattleApplication extends Application {
             game = new Scene(gameGroup, 1100, 700, Color.rgb(51, 102, 153));
 
             MenuScene menuScene = new MenuScene(menuGroup, stage, menu);
-            GameScene gameScene = new GameScene(gameGroup, game, menu, billiardParent, window, outToServer, inFromServer, billiardLoader.getController());
+            GameScene gameScene = new GameScene(gameGroup, game, menu, billiardParent, window, billiardLoader.getController());
             gameScene.startGame();
 
             ClientThread clientThread = new ClientThread(inFromServer, billiardLoader.getController());

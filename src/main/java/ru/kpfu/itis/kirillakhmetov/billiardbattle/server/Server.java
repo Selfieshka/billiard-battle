@@ -1,6 +1,7 @@
 package ru.kpfu.itis.kirillakhmetov.billiardbattle.server;
 
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.server.entity.ServerProperties;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.server.util.PlayerThread;
 
 import java.io.BufferedReader;
 import java.io.IOException;

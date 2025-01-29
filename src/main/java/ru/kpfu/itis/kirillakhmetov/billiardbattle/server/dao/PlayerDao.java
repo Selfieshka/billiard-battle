@@ -37,7 +37,7 @@ public class PlayerDao {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return Optional.ofNullable(Player.builder()
-                        .name(name)
+                        .username(name)
                         .password(resultSet.getString("password"))
                         .balance(resultSet.getInt("money"))
                         .build());
@@ -51,7 +51,7 @@ public class PlayerDao {
     public void save(Player player) {
         try (Connection connection = ConnectionProvider.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_SAVE)) {
-            statement.setString(1, player.getName());
+            statement.setString(1, player.getUsername());
             statement.setString(2, player.getPassword());
             statement.execute();
         } catch (SQLException e) {

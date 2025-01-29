@@ -8,31 +8,22 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class Player {
-    private boolean isMyturn;
-    private String name, ID;
-    private boolean win;
+    private String id;
+    private String username;
     private String password;
-    private int ballType;//1 will mean solids 2 will mean stripes 0 will mean not set
-    private boolean allBallsPotted;
     private int balance;
+    private boolean win;
+    private int ballType;
+    private boolean isMyTurn;
+    private boolean allBallsPotted;
 
     public Player() {
-        isMyturn = false;
-        win = false;
-        ballType = 0;
-        name = "";
-        allBallsPotted = false;
-        ID = "";
-        balance = 0;
+        this.username = "";
+        this.id = "";
     }
 
     public Player(String name) {
-        isMyturn = false;
-        win = false;
-        ballType = 0;
-        this.name = name;
-        allBallsPotted = false;
-        ID = "";
-        balance = 0;
+        this.id = "";
+        this.username = name;
     }
 }
