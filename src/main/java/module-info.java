@@ -11,10 +11,12 @@ module ru.kpfu.itis.kirillakhmetov.billiardbattle {
     exports ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity;
     exports ru.kpfu.itis.kirillakhmetov.billiardbattle.client;
     exports ru.kpfu.itis.kirillakhmetov.billiardbattle.server;
+    exports ru.kpfu.itis.kirillakhmetov.billiardbattle.server.entity;
 
-    opens ru.kpfu.itis.kirillakhmetov.billiardbattle.client.controller to javafx.fxml;
     opens view to javafx.fxml;
+    opens ru.kpfu.itis.kirillakhmetov.billiardbattle.client.controller to javafx.fxml;
     opens ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene to javafx.fxml;
     opens ru.kpfu.itis.kirillakhmetov.billiardbattle.server to javafx.fxml;
     opens ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity;
+    opens ru.kpfu.itis.kirillakhmetov.billiardbattle.server.entity to javafx.fxml;
 }
