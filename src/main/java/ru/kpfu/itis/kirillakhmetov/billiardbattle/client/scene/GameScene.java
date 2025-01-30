@@ -15,8 +15,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import lombok.Getter;
-import lombok.Setter;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.BilliardBattleApplication;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.controller.GameController;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Ball;
@@ -26,6 +24,8 @@ import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Vector;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.server.entity.ServerProperties.SEPARATOR;
+
 
 public class GameScene {
     private final Stage window;
@@ -33,63 +33,45 @@ public class GameScene {
     private final Scene scene;
     private final Scene menu;
     private final GameController gameController;
-    public static Ball[] ball;
-    @Getter
-    private static Player player1;
-    @Getter
-    private static Player player2;
-    @Getter
+    private static Ball[] balls = new Ball[16];
+    private final boolean[] potted = new boolean[16];
+    private static final Player player1 = new Player("");
+    private static final Player player2 = new Player("");
+    private final ArrayList<Integer> thisTurnPottedBalls = new ArrayList<>();
     private static int turnNum = 1;
-    @Getter
     private static boolean isTurn;
-    @Getter
-    @Setter
     private boolean isFoul;
-    @Getter
     private static boolean gameOver;
     private double stack_y = 605;
     private boolean flagForTurnChange;
     private boolean flagForFoulCheck;
     private boolean flagForOtherTypeBallCollisionFoulCheck;
     private boolean flagForNoBallHitFoulCheck = true;
-    private final ArrayList<Integer> thisTurnPottedBalls;
 
     private static final Label labelForTurnChange = new Label();
     private final Label labelForBallTypePlayer1 = new Label();
     private final Label labelForBallTypePlayer2 = new Label();
-    private final Label labelForBestOfLuck = new Label();
     private final Label labelForGameOver = new Label();
     private final Label labelForPlayerWins = new Label();
     private final Label labelForPressAnyKey = new Label();
     private final Label labelForFoul = new Label();
+    private static final Label player1label = new Label();
+    private static final Label player2Label = new Label();
 
     private final ImageView[] BallSolid = new ImageView[7];
     private final ImageView[] BallStripes = new ImageView[7];
     private final ImageView[] BallKala = new ImageView[2];
 
-    private final boolean[] potted = new boolean[16];
-    @Getter
-    @Setter
-    private static boolean TurnOffSounds;
     private final Timeline timeline = new Timeline();
-    @Getter
     private static boolean gamePause;
-    @Getter
-    private static Label player1label;
-    @Getter
-    private static Label player2Label;
-    @Getter
     private static int bet;
 
     public GameScene(Group group, Scene scene, Scene menu, Parent root, Stage window, GameController gameController) {
-        ball = new Ball[16];
         this.window = window;
         this.group = group;
         this.menu = menu;
         this.gameController = gameController;
         this.scene = scene;
-        player1label = new Label();
-        player2Label = new Label();
         player1label.setLayoutX(240);
         player1label.setLayoutY(10);
         player2Label.setLayoutX(760);
@@ -97,8 +79,6 @@ public class GameScene {
         player1label.getStyleClass().add("label-player2");
         player2Label.getStyleClass().add("label-player2");
         group.getChildren().addAll(player1label, player2Label);
-        player1 = new Player("");
-        player2 = new Player("");
         ImageView imageView1 = new ImageView();
         ImageView imageView2 = new ImageView();
         imageView1.setLayoutX(100);
@@ -113,23 +93,21 @@ public class GameScene {
         group.getChildren().addAll(root, imageView1, imageView2);
         scene.getStylesheets().add(String.valueOf(getClass().getResource("/css/menu.css")));
         initializeBalls();
-        thisTurnPottedBalls = new ArrayList<>();
         player1.setMyTurn(true);
         isTurn = true;
         labelForTurnChange.setLayoutX(462);
         labelForTurnChange.setLayoutY(81);
-        labelForTurnChange.setText(player1.getUsername() + " Is Breaking");
+        labelForTurnChange.setText("%s ударил".formatted(player1.getUsername()));
         labelForTurnChange.getStyleClass().add("label-player");
         labelForFoul.setLayoutX(531);
         labelForFoul.setLayoutY(655);
-        labelForFoul.setText("FOUL!!");
+        labelForFoul.setText("ФОЛ!!!");
         labelForFoul.getStyleClass().add("label-player");
         group.getChildren().add(labelForTurnChange);
-        group.getChildren().addAll(labelForBallTypePlayer1, labelForBallTypePlayer2, labelForBestOfLuck);
+        group.getChildren().addAll(labelForBallTypePlayer1, labelForBallTypePlayer2);
         group.getChildren().addAll(labelForGameOver, labelForPlayerWins, labelForPressAnyKey, labelForFoul);
         labelForBallTypePlayer1.setVisible(false);
         labelForBallTypePlayer2.setVisible(false);
-        labelForBestOfLuck.setVisible(false);
         labelForGameOver.setVisible(false);
         labelForPlayerWins.setVisible(false);
         labelForPressAnyKey.setVisible(false);
@@ -156,7 +134,7 @@ public class GameScene {
         BallKala[0].setLayoutY(660);
         BallKala[1].setLayoutX(678);
         BallKala[1].setLayoutY(660);
-        Button leave = new Button("Leave");
+        Button leave = new Button("Покинуть");
         leave.setLayoutX(2);
         leave.setLayoutY(70);
         leave.getStyleClass().add("button-game");
@@ -169,41 +147,41 @@ public class GameScene {
     }
 
     public void initializeBalls() {
-        ball[4] = new Ball(865, 325, "/img/ball3D/4.png", 1, 4);
-        ball[12] = new Ball(865, 350, "/img/ball3D/12.png", 2, 12);
-        ball[3] = new Ball(865, 375, "/img/ball3D/3.png", 1, 3);
-        ball[9] = new Ball(865, 400, "/img/ball3D/9.png", 2, 9);
-        ball[7] = new Ball(865, 425, "/img/ball3D/7.png", 1, 7);
+        balls[4] = new Ball(865, 325, "/img/ball3D/4.png", 1, 4);
+        balls[12] = new Ball(865, 350, "/img/ball3D/12.png", 2, 12);
+        balls[3] = new Ball(865, 375, "/img/ball3D/3.png", 1, 3);
+        balls[9] = new Ball(865, 400, "/img/ball3D/9.png", 2, 9);
+        balls[7] = new Ball(865, 425, "/img/ball3D/7.png", 1, 7);
 
-        ball[1] = new Ball(841, 338, "/img/ball3D/1.png", 1, 1);
-        ball[15] = new Ball(841, 363, "/img/ball3D/15.png", 2, 15);
-        ball[2] = new Ball(841, 388, "/img/ball3D/2.png", 1, 2);
-        ball[5] = new Ball(841, 413, "/img/ball3D/5.png", 1, 5);
+        balls[1] = new Ball(841, 338, "/img/ball3D/1.png", 1, 1);
+        balls[15] = new Ball(841, 363, "/img/ball3D/15.png", 2, 15);
+        balls[2] = new Ball(841, 388, "/img/ball3D/2.png", 1, 2);
+        balls[5] = new Ball(841, 413, "/img/ball3D/5.png", 1, 5);
 
-        ball[14] = new Ball(817, 350, "/img/ball3D/14.png", 2, 14);
-        ball[8] = new Ball(817, 375, "/img/ball3D/8.png", 3, 8);
-        ball[10] = new Ball(817, 400, "/img/ball3D/10.png", 2, 10);
+        balls[14] = new Ball(817, 350, "/img/ball3D/14.png", 2, 14);
+        balls[8] = new Ball(817, 375, "/img/ball3D/8.png", 3, 8);
+        balls[10] = new Ball(817, 400, "/img/ball3D/10.png", 2, 10);
 
-        ball[11] = new Ball(793, 363, "/img/ball3D/11.png", 2, 11);
-        ball[6] = new Ball(793, 388, "/img/ball3D/6.png", 1, 6);
+        balls[11] = new Ball(793, 363, "/img/ball3D/11.png", 2, 11);
+        balls[6] = new Ball(793, 388, "/img/ball3D/6.png", 1, 6);
 
-        ball[13] = new Ball(769, 375, "/img/ball3D/13.png", 2, 13);
+        balls[13] = new Ball(769, 375, "/img/ball3D/13.png", 2, 13);
 
-        ball[0] = new Ball(346, 375, "/img/ball3D/0.png", 0, 0);
+        balls[0] = new Ball(346, 375, "/img/ball3D/0.png", 0, 0);
 
         for (int i = 0; i < 16; i++) {
-            group.getChildren().add(ball[i].DrawBall());
+            group.getChildren().add(balls[i].DrawBall());
         }
     }
 
     public static void setVelocity(double x, double y) {
-        ball[0].setVelocity(x, y);
-        BilliardBattleApplication.outToServer.println("V#" + x + "#" + y);
+        balls[0].setVelocity(x, y);
+        BilliardBattleApplication.outToServer.println("V%s%s%s%s".formatted(SEPARATOR, x, SEPARATOR, y));
     }
 
     private void reInitialize() {
         for (int i = 0; i < 16; i++) {
-            group.getChildren().remove(ball[i].getSphere());
+            group.getChildren().remove(balls[i].getSphere());
         }
         initializeBalls();
         turnNum = 1;
@@ -212,18 +190,18 @@ public class GameScene {
         flagForFoulCheck = false;
         flagForOtherTypeBallCollisionFoulCheck = false;
         flagForNoBallHitFoulCheck = true;
+        isFoul = false;
+        gamePause = false;
         thisTurnPottedBalls.clear();
         for (int i = 0; i < 16; i++) {
             potted[i] = false;
         }
         player1.setMyTurn(true);
         player2.setMyTurn(false);
-        isFoul = false;
         gameOver = false;
         isTurn = true;
         labelForBallTypePlayer1.setVisible(false);
         labelForBallTypePlayer2.setVisible(false);
-        labelForBestOfLuck.setVisible(false);
         labelForGameOver.setVisible(false);
         labelForPlayerWins.setVisible(false);
         labelForPressAnyKey.setVisible(false);
@@ -235,7 +213,6 @@ public class GameScene {
         for (int i = 0; i < 2; i++) {
             BallKala[i].setVisible(false);
         }
-        gamePause = false;
         player1.setWin(false);
         player2.setWin(false);
         player1.setBallType(0);
@@ -246,16 +223,16 @@ public class GameScene {
 
     private void update() {
         if (turnNum == 1) {
-            labelDekhaw();
+            showLabelPlayerIsBreaking();
         }
         boolean flag = false;
         moveCueBall();
         for (int i = 0; i < 16; i++) {
-            if (!ball[i].getVelocity().isNull()) {
+            if (!balls[i].getVelocity().isNull()) {
                 flag = true;
                 flagForTurnChange = true;
             }
-            updateSingleBalls(i);
+            updateBalls(i);
             checkForPocket(i);
         }
         if (flag) {
@@ -263,7 +240,7 @@ public class GameScene {
         } else {
             if (!flagForTurnChange) {
                 isTurn = true;
-                turnLabel();
+                showLabelTurnForPlayer();
             } else {
                 isFoul = false;
                 checkForCases();
@@ -281,8 +258,8 @@ public class GameScene {
                 isTurn = true;
 
                 if (thisTurnPottedBalls.contains(0)) {
-                    ball[0].setPosition(new Vector(346, 375));
-                    ball[0].getSphere().setVisible(true);
+                    balls[0].setPosition(new Vector(346, 375));
+                    balls[0].getSphere().setVisible(true);
                 }
                 for (int i = 1; i <= 7; i++) {
                     if (potted[i]) {
@@ -305,21 +282,21 @@ public class GameScene {
         }
     }
 
-    private void labelDekhaw() {
+    private void showLabelPlayerIsBreaking() {
         player1label.setText(player1.getUsername());
         player2Label.setText(player2.getUsername());
         if (player1.isMyTurn())
-            labelForTurnChange.setText(player1.getUsername() + " Is Breaking");
+            labelForTurnChange.setText("%s ударил".formatted(player1.getUsername()));
         else {
-            labelForTurnChange.setText(player2.getUsername() + " Is Breaking");
+            labelForTurnChange.setText("%s ударил".formatted(player2.getUsername()));
         }
     }
 
-    private void turnLabel() {
+    private void showLabelTurnForPlayer() {
         if (player1.isMyTurn()) {
-            labelForTurnChange.setText("Turn for " + player1.getUsername());
+            labelForTurnChange.setText("Ход у %s".formatted(player1.getUsername()));
         } else {
-            labelForTurnChange.setText("Turn for " + player2.getUsername());
+            labelForTurnChange.setText("Ход у %s".formatted(player2.getUsername()));
         }
     }
 
@@ -343,72 +320,63 @@ public class GameScene {
 
     private void showAlert() {
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("FOUL!!");
+        alert.setTitle("ФОЛ!!!");
 
         if (thisTurnPottedBalls.contains(0))
-            alert.setHeaderText("You potted the Cue ball");
+            alert.setHeaderText("Вы забили белый шар");
         else if (flagForOtherTypeBallCollisionFoulCheck)
-            alert.setHeaderText("You must hit your assigned ball type");
+            alert.setHeaderText("Вы должны попасть по мячу своего типа");
         else
-            alert.setHeaderText("You must hit a ball");
+            alert.setHeaderText("Вы должны попасть по шару");
 
-        if (player1.isMyTurn())
-            alert.setContentText("Ball in hand " + player1.getUsername());
-        else alert.setContentText("Ball in hand " + player2.getUsername());
+        if (player1.isMyTurn()) {
+            alert.setContentText("Шар у %s".formatted(player1.getUsername()));
+        } else {
+            alert.setContentText("Шар у %s".formatted(player2.getUsername()));
+        }
         alert.show();
     }
 
     private void checkAllPottedBalls() {
         if (player1.getBallType() == 0)
             return;
-        int f = 0;
+        boolean f = false;
         if (player1.isMyTurn()) {
-            if (player1.getBallType() == 1) {
-                for (int i = 1; i <= 7; i++) {
-                    if (!potted[i]) {
-                        f = 1;
-                        break;
-                    }
-                }
-            } else {
-                for (int i = 9; i <= 15; i++) {
-                    if (!potted[i]) {
-                        f = 1;
-                        break;
-                    }
-                }
-            }
-            if (f == 0)
-                player1.setAllBallsPotted(true);
+            checkPottedBallNow(f, player1);
         } else {
-            if (player2.getBallType() == 1) {
-                for (int i = 1; i <= 7; i++) {
-                    if (!potted[i]) {
-                        f = 1;
-                        break;
-                    }
-                }
-            } else {
-                for (int i = 9; i <= 15; i++) {
-                    if (!potted[i]) {
-                        f = 1;
-                        break;
-                    }
-                }
-            }
-            if (f == 0)
-                player2.setAllBallsPotted(true);
+            checkPottedBallNow(f, player2);
         }
     }
 
-    private void updateSingleBalls(int ball_num) {
-        if (ball[ball_num].getVelocity().getSize() <= 8e-2) {
-            ball[ball_num].setVelocity(0, 0);
+    private void checkPottedBallNow(boolean f, Player player1) {
+        if (player1.getBallType() == 1) {
+            for (int i = 1; i <= 7; i++) {
+                if (!potted[i]) {
+                    f = true;
+                    break;
+                }
+            }
         } else {
-            ball[ball_num].getPosition().setX(ball[ball_num].getPosition().getX() + ball[ball_num].getVelocity().getX());
-            ball[ball_num].getPosition().setY(ball[ball_num].getPosition().getY() + ball[ball_num].getVelocity().getY());
-            for (Ball b : ball) {
-                if (ball_num != b.getBallNumber() && ball[ball_num].collides(b)) {
+            for (int i = 9; i <= 15; i++) {
+                if (!potted[i]) {
+                    f = true;
+                    break;
+                }
+            }
+        }
+        if (!f) {
+            player1.setAllBallsPotted(true);
+        }
+    }
+
+    private void updateBalls(int ball_num) {
+        if (balls[ball_num].getVelocity().getSize() <= 8e-2) {
+            balls[ball_num].setVelocity(0, 0);
+        } else {
+            balls[ball_num].getPosition().setX(balls[ball_num].getPosition().getX() + balls[ball_num].getVelocity().getX());
+            balls[ball_num].getPosition().setY(balls[ball_num].getPosition().getY() + balls[ball_num].getVelocity().getY());
+            for (Ball b : balls) {
+                if (ball_num != b.getBallNumber() && balls[ball_num].collides(b)) {
                     if (ball_num == 0 && !flagForOtherTypeBallCollisionFoulCheck && player1.getBallType() == 0) {
                         flagForOtherTypeBallCollisionFoulCheck = true;
                         if (b.getBallType() == 3) {
@@ -430,31 +398,31 @@ public class GameScene {
                     if (ball_num == 0) {
                         flagForNoBallHitFoulCheck = false;
                     }
-                    ball[ball_num].getPosition().setX(ball[ball_num].getPosition().getX() - ball[ball_num].getVelocity().getX());
-                    ball[ball_num].getPosition().setY(ball[ball_num].getPosition().getY() - ball[ball_num].getVelocity().getY());
-                    ball[ball_num].transferEnergy(b);
+                    balls[ball_num].getPosition().setX(balls[ball_num].getPosition().getX() - balls[ball_num].getVelocity().getX());
+                    balls[ball_num].getPosition().setY(balls[ball_num].getPosition().getY() - balls[ball_num].getVelocity().getY());
+                    balls[ball_num].transferEnergy(b);
                     break;
                 }
             }
-            ball[ball_num].updateWallCollision();
-            ball[ball_num].applyTableFriction();
-            ball[ball_num].spin();
+            balls[ball_num].updateWallCollision();
+            balls[ball_num].applyTableFriction();
+            balls[ball_num].spin();
         }
-        ball[ball_num].getSphere().setLayoutX(ball[ball_num].getPosition().getX());
-        ball[ball_num].getSphere().setLayoutY(ball[ball_num].getPosition().getY());
+        balls[ball_num].getSphere().setLayoutX(balls[ball_num].getPosition().getX());
+        balls[ball_num].getSphere().setLayoutY(balls[ball_num].getPosition().getY());
     }
 
     private void moveCueBall() {
-        ball[0].getSphere().addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
+        balls[0].getSphere().addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
             if (isTurn && isFoul && player1.isMyTurn()) {
                 gameController.stick.setVisible(false);
                 gameController.circle.setVisible(false);
                 gameController.line.setVisible(false);
                 gameController.predictedLine.setVisible(false);
-                ball[0].getSphere().setCursor(Cursor.CLOSED_HAND);
+                balls[0].getSphere().setCursor(Cursor.CLOSED_HAND);
                 if ((event.getSceneX() <= 937 && event.getSceneX() >= 157) && (event.getSceneY() >= 180 && event.getSceneY() <= 568)) {
-                    ball[0].setPosition(new Vector(event.getSceneX(), event.getSceneY()));
-                    BilliardBattleApplication.outToServer.println("M#" + event.getSceneX() + "#" + event.getSceneY());
+                    balls[0].setPosition(new Vector(event.getSceneX(), event.getSceneY()));
+                    BilliardBattleApplication.outToServer.println("M%s%s%s%s".formatted(SEPARATOR, event.getSceneX(), SEPARATOR, event.getSceneY()));
                 }
 
             } else if (isTurn && turnNum == 1 && player1.isMyTurn()) {
@@ -462,10 +430,10 @@ public class GameScene {
                 gameController.circle.setVisible(false);
                 gameController.line.setVisible(false);
                 gameController.predictedLine.setVisible(false);
-                ball[0].getSphere().setCursor(Cursor.CLOSED_HAND);
+                balls[0].getSphere().setCursor(Cursor.CLOSED_HAND);
                 if ((event.getSceneX() <= 344 && event.getSceneX() >= 155) && (event.getSceneY() >= 170 && event.getSceneY() <= 570)) {
-                    ball[0].setPosition(new Vector(event.getSceneX(), event.getSceneY()));
-                    BilliardBattleApplication.outToServer.println("M#" + event.getSceneX() + "#" + event.getSceneY());
+                    balls[0].setPosition(new Vector(event.getSceneX(), event.getSceneY()));
+                    BilliardBattleApplication.outToServer.println("M%s%s%s%s".formatted(SEPARATOR, event.getSceneX(), SEPARATOR, event.getSceneY()));
                 }
             }
         });
@@ -473,24 +441,24 @@ public class GameScene {
     }
 
     private void checkForCases() {
-        int flag = 0;
+        boolean flag = false;
         if (turnNum == 1) {
             if (thisTurnPottedBalls.isEmpty()) {
-                flag = 1;
+                flag = true;
             } else {
                 for (Integer thisTurnPottedBall : thisTurnPottedBalls) {
                     if (thisTurnPottedBall == 8) {
-                        khelaSes();
+                        loss();
                     } else if (thisTurnPottedBall == 0) {
                         isFoul = true;
-                        flag = 1;
+                        flag = true;
                     } else potted[thisTurnPottedBall] = true;
                 }
             }
 
         } else if (turnNum >= 2 && player1.getBallType() == 0) {
             if (thisTurnPottedBalls.isEmpty()) {
-                flag = 1;
+                flag = true;
             } else {
                 int firstPuttedBallNum = thisTurnPottedBalls.getFirst();
                 if (firstPuttedBallNum >= 1 && firstPuttedBallNum < 8) {
@@ -514,125 +482,96 @@ public class GameScene {
                 }
                 for (Integer thisTurnPottedBall : thisTurnPottedBalls) {
                     if (thisTurnPottedBall == 8) {
-                        khelaSes();
+                        loss();
                     } else if (thisTurnPottedBall == 0) {
                         isFoul = true;
-                        flag = 1;
+                        flag = true;
                     } else potted[thisTurnPottedBall] = true;
                 }
             }
-
         } else {
             if (thisTurnPottedBalls.isEmpty()) {
-                flag = 1;
+                flag = true;
             } else if (thisTurnPottedBalls.size() == 1 && thisTurnPottedBalls.getFirst() == 8) {
                 if (player1.isMyTurn()) {
-                    if (player1.getBallType() == 1) {
-                        int f = 0;
-                        for (int i = 1; i <= 7; i++) {
-                            if (!potted[i]) {
-                                f = 1;
-                                khelaSes();
-                            }
-                        }
-                        if (f == 0) {
-                            win();
-                        }
-                    } else {
-                        int f = 0;
-                        for (int i = 9; i <= 15; i++) {
-                            if (!potted[i]) {
-                                f = 1;
-                                khelaSes();
-                            }
-                        }
-                        if (f == 0) {
-                            win();
-                        }
-                    }
+                    checkPottedBallType(player1);
                 } else {
-                    if (player2.getBallType() == 1) {
-                        int f = 0;
-                        for (int i = 1; i <= 7; i++) {
-                            if (!potted[i]) {
-                                f = 1;
-                                khelaSes();
-                            }
-                        }
-                        if (f == 0) {
-                            win();
-                        }
-                    } else {
-                        int f = 0;
-                        for (int i = 9; i <= 15; i++) {
-                            if (!potted[i]) {
-                                f = 1;
-                                khelaSes();
-                            }
-                        }
-                        if (f == 0) {
-                            win();
-                        }
-                    }
+                    checkPottedBallType(player2);
                 }
             } else {
                 int firstPuttedBallNum = thisTurnPottedBalls.getFirst();
                 if (player1.isMyTurn()) {
-                    if (player1.getBallType() != ball[firstPuttedBallNum].getBallType()) {
-                        flag = 1;
+                    if (player1.getBallType() != balls[firstPuttedBallNum].getBallType()) {
+                        flag = true;
                     }
                     for (Integer thisTurnPottedBall : thisTurnPottedBalls) {
                         if (thisTurnPottedBall == 8) {
-                            //Write code
-                            khelaSes();
+                            loss();
                         } else if (thisTurnPottedBall == 0) {
                             isFoul = true;
-                            flag = 1;
+                            flag = true;
                         } else {
                             potted[thisTurnPottedBall] = true;
                         }
                     }
                 } else {
-                    if (player2.getBallType() != ball[firstPuttedBallNum].getBallType()) {
-                        flag = 1;
+                    if (player2.getBallType() != balls[firstPuttedBallNum].getBallType()) {
+                        flag = true;
                     }
                     for (Integer thisTurnPottedBall : thisTurnPottedBalls) {
                         if (thisTurnPottedBall == 8) {
-                            //Write Code
-                            khelaSes();
+                            loss();
                         } else if (thisTurnPottedBall == 0) {
                             isFoul = true;
-                            flag = 1;
+                            flag = true;
                         } else {
                             potted[thisTurnPottedBall] = true;
                         }
                     }
                 }
             }
-
-
         }
         if (flagForFoulCheck || flagForNoBallHitFoulCheck) {
             isFoul = true;
         }
-        if (flag == 1 || flagForFoulCheck || flagForNoBallHitFoulCheck)
-            alterTurn();
+        if (flag || flagForFoulCheck || flagForNoBallHitFoulCheck) {
+            changeTurn();
+        }
         labelForFoul.setVisible(isFoul);
+    }
+
+    private void checkPottedBallType(Player player2) {
+        boolean flag = false;
+        if (player2.getBallType() == 1) {
+            for (int i = 1; i <= 7; i++) {
+                if (!potted[i]) {
+                    flag = true;
+                    loss();
+                }
+            }
+        } else {
+            for (int i = 9; i <= 15; i++) {
+                if (!potted[i]) {
+                    flag = true;
+                    loss();
+                }
+            }
+        }
+        if (!flag) {
+            win();
+        }
     }
 
     private void showLabel() {
         labelForBallTypePlayer1.setVisible(true);
         labelForBallTypePlayer2.setVisible(true);
-        labelForBestOfLuck.setVisible(true);
         labelForBallTypePlayer1.setLayoutX(186);
         labelForBallTypePlayer2.setLayoutX(719);
-        labelForBestOfLuck.setLayoutX(488);
         labelForBallTypePlayer1.setLayoutY(624);
         labelForBallTypePlayer2.setLayoutY(624);
-        labelForBestOfLuck.setLayoutY(624);
         if (player1.getBallType() == 1) {
-            labelForBallTypePlayer1.setText(player1.getUsername() + " is Solids");
-            labelForBallTypePlayer2.setText(player2.getUsername() + " is Stripes");
+            labelForBallTypePlayer1.setText("%s сплошные".formatted(player1.getUsername()));
+            labelForBallTypePlayer2.setText("%s полосатые".formatted(player2.getUsername()));
             int place1 = 360, place2 = 147;
             for (int i = 0; i < 7; i++) {
                 BallSolid[i].setLayoutX(531 - place1);
@@ -660,17 +599,14 @@ public class GameScene {
                 BallSolid[i].setVisible(true);
             }
         }
-        labelForBestOfLuck.setText("Best Of Luck");
         labelForBallTypePlayer1.getStyleClass().add("label-player");
         labelForBallTypePlayer2.getStyleClass().add("label-player");
-        labelForBestOfLuck.getStyleClass().add("label-player");
-
     }
 
-    private void khelaSes() {
+    private void loss() {
         if (player1.isMyTurn()) {
-            player2.setWin(true);
             player1.setWin(false);
+            player2.setWin(true);
         } else {
             player1.setWin(true);
             player2.setWin(false);
@@ -680,8 +616,8 @@ public class GameScene {
 
     private void win() {
         if (player1.isMyTurn()) {
-            player2.setWin(false);
             player1.setWin(true);
+            player2.setWin(false);
         } else {
             player1.setWin(false);
             player2.setWin(true);
@@ -689,7 +625,7 @@ public class GameScene {
         gameOver = true;
     }
 
-    private void gameOverDilg() {
+    private void gameOver() {
         labelForGameOver.setVisible(true);
         labelForPlayerWins.setVisible(true);
         labelForPressAnyKey.setVisible(true);
@@ -708,7 +644,7 @@ public class GameScene {
         labelForPressAnyKey.getStyleClass().add("label-over");
         if (GameScene.getPlayer1().isWin()) {
             player1.setBalance(player1.getBalance() + bet);
-            BilliardBattleApplication.outToServer.println("W#" + GameScene.getPlayer1().getUsername() + "#" + GameScene.getPlayer2().getUsername() + "#" + bet);
+            BilliardBattleApplication.outToServer.println("W%s%s%s%s%s%s".formatted(SEPARATOR, GameScene.getPlayer1().getUsername(), SEPARATOR, GameScene.getPlayer2().getUsername(), SEPARATOR, bet));
         } else {
             player1.setBalance(player1.getBalance() - bet);
         }
@@ -718,62 +654,59 @@ public class GameScene {
         });
     }
 
-    private void alterTurn() {
+    private void changeTurn() {
         if (player1.isMyTurn()) {
             player1.setMyTurn(false);
             player2.setMyTurn(true);
         } else {
-            player2.setMyTurn(false);
             player1.setMyTurn(true);
+            player2.setMyTurn(false);
         }
     }
-
 
     private void checkForPocket(int ballNum) {
-        double x = ball[ballNum].getPosition().getX(), y = ball[ballNum].getPosition().getY();
+        double x = balls[ballNum].getPosition().getX(), y = balls[ballNum].getPosition().getY();
         double check = 625;
 
-        if (sqdistance(x, y, 130, 154) <= check) {
+        if (calculateDistance(x, y, 130, 154) <= check) {
             dropIt(ballNum);
-        } else if (sqdistance(x, y, 550, 151) <= check) {
+        } else if (calculateDistance(x, y, 550, 151) <= check) {
             dropIt(ballNum);
-        } else if (sqdistance(x, y, 970, 154) <= check) {
+        } else if (calculateDistance(x, y, 970, 154) <= check) {
             dropIt(ballNum);
-        } else if (sqdistance(x, y, 970, 595) <= check) {
+        } else if (calculateDistance(x, y, 970, 595) <= check) {
             dropIt(ballNum);
-        } else if (sqdistance(x, y, 550, 600) <= check) {
+        } else if (calculateDistance(x, y, 550, 600) <= check) {
             dropIt(ballNum);
-        } else if (sqdistance(x, y, 130, 595) <= check) {
-            dropIt(ballNum);
-        }
-        if ((y <= 148 || y >= 602) && !ball[ballNum].isDropped()) {
+        } else if (calculateDistance(x, y, 130, 595) <= check) {
             dropIt(ballNum);
         }
-        if ((x <= 113 || x >= 979) && !ball[ballNum].isDropped()) {
+        if ((y <= 148 || y >= 602) && !balls[ballNum].isDropped()) {
             dropIt(ballNum);
         }
-
+        if ((x <= 113 || x >= 979) && !balls[ballNum].isDropped()) {
+            dropIt(ballNum);
+        }
     }
 
-    private double sqdistance(double x1, double y1, double x2, double y2) {
+    private double calculateDistance(double x1, double y1, double x2, double y2) {
         return (((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)));
     }
 
     private void dropIt(int ballNum) {
         thisTurnPottedBalls.add(ballNum);
-        ball[ballNum].setDropped(true);
-        ball[ballNum].setVelocity(0, 0);
-        ball[ballNum].setPosition(new Vector(1045, stack_y));
+        balls[ballNum].setDropped(true);
+        balls[ballNum].setVelocity(0, 0);
+        balls[ballNum].setPosition(new Vector(1045, stack_y));
 
         stack_y -= 25;
         if (ballNum == 0) {
             stack_y += 25;
-            ball[0].getSphere().setVisible(false);
-            ball[0].setPosition(new Vector(0, 0));
-            ball[0].setDropped(false);
+            balls[0].getSphere().setVisible(false);
+            balls[0].setPosition(new Vector(0, 0));
+            balls[0].setDropped(false);
         }
     }
-
 
     public void startGame() {
         gamePause = false;
@@ -785,7 +718,7 @@ public class GameScene {
                         update();
                     } else {
                         gameOver = false;
-                        gameOverDilg();
+                        gameOver();
                     }
                 });
         timeline.getKeyFrames().add(keyFrame);
@@ -814,10 +747,39 @@ public class GameScene {
     }
 
     public static Ball getCueBall() {
-        return ball[0];
+        return balls[0];
     }
 
     public static void setBet(int bet) {
         GameScene.bet = bet;
+    }
+
+    public static Ball[] getBalls() {
+        return balls;
+    }
+
+    public static void setBalls(Ball[] balls) {
+        GameScene.balls = balls;
+    }
+
+    public static Player getPlayer1() {
+        return GameScene.player1;
+    }
+
+    public static Player getPlayer2() {
+        return GameScene.player2;
+    }
+
+
+    public static boolean isTurn() {
+        return GameScene.isTurn;
+    }
+
+    public static boolean isGameOver() {
+        return GameScene.gameOver;
+    }
+
+    public static boolean isGamePause() {
+        return GameScene.gamePause;
     }
 }

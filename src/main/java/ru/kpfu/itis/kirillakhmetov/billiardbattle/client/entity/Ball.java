@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,23 +16,15 @@ import java.util.Objects;
 import static javafx.scene.paint.Color.WHITE;
 import static ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.GameParameters.*;
 
-@ToString
+@Data
 public class Ball {
     private final Vector initialPosition;
-    @Getter
-    @Setter
     private Vector position;
-    @Getter
     private Vector velocity;
-    @Getter
     private final Sphere sphere;
     private final String image;
-    @Getter
     private final int ballType;
-    @Getter
     private final int ballNumber;
-    @Getter
-    @Setter
     private boolean isDropped;
 
     public Ball(double positionX, double positionY, String image, int ballType, int ballNumber) {

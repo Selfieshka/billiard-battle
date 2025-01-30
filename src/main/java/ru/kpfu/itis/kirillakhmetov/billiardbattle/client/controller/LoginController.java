@@ -7,9 +7,12 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.BilliardBattleApplication;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.server.entity.ServerProperties;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.server.entity.ServerProperties.*;
 
 public class LoginController implements Initializable {
     @FXML
@@ -26,7 +29,7 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         login.setOnAction(e -> {
-            BilliardBattleApplication.outToServer.println("login#" + username.getText() + "#" + password.getText());
+            BilliardBattleApplication.outToServer.println("login%s%s%s%s".formatted(SEPARATOR, username.getText(), SEPARATOR, password.getText()));
         });
         register.setOnAction(event -> {
             BilliardBattleApplication.window.setScene(BilliardBattleApplication.register);

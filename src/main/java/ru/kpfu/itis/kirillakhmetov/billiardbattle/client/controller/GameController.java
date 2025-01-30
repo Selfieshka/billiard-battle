@@ -71,7 +71,7 @@ public class GameController {
 
             boolean flag = false;
             for (int i = 0; i < 16; i++) {
-                if (collides(circle, GameScene.ball[i])) {
+                if (collides(circle, GameScene.getBalls()[i])) {
                     flag = true;
                     break;
                 }
@@ -79,7 +79,7 @@ public class GameController {
             predictedLine.setVisible(flag);
 
             for (int i = 1; i < 16; i++) {
-                if (collides(circle, GameScene.ball[i])) {
+                if (collides(circle, GameScene.getBalls()[i])) {
                     double cueBallVelocity = CUE_BALL_VELOCITY;
                     double angle = Math.atan((y2 - y1) / (x2 - x1));
                     if (x2 < x1) cueBallVelocity = -cueBallVelocity;
@@ -87,16 +87,16 @@ public class GameController {
                     Vector position = new Vector(circle.getCenterX(), circle.getCenterY());
                     Vector velocity = new Vector(cueBallVelocity * Math.cos(angle),
                             cueBallVelocity * Math.sin(angle));
-                    Vector nv2 = position.sub(GameScene.ball[i].getPosition());
+                    Vector nv2 = position.sub(GameScene.getBalls()[i].getPosition());
 
                     nv2.normalize();
                     nv2.multiply(velocity.dot(nv2));
-                    Vector nv2b = GameScene.ball[i].getPosition().sub(position);
+                    Vector nv2b = GameScene.getBalls()[i].getPosition().sub(position);
                     nv2b.normalize();
-                    nv2b.multiply(GameScene.ball[i].getVelocity().dot(nv2b));
-                    Vector nv1b = GameScene.ball[i].getVelocity().sub(nv2b);
-                    double p = GameScene.ball[i].getSphere().getLayoutX();
-                    double q = GameScene.ball[i].getSphere().getLayoutY();
+                    nv2b.multiply(GameScene.getBalls()[i].getVelocity().dot(nv2b));
+                    Vector nv1b = GameScene.getBalls()[i].getVelocity().sub(nv2b);
+                    double p = GameScene.getBalls()[i].getSphere().getLayoutX();
+                    double q = GameScene.getBalls()[i].getSphere().getLayoutY();
                     Vector v = nv2.add(nv1b);
 
                     predictedLine.setStartX(p);

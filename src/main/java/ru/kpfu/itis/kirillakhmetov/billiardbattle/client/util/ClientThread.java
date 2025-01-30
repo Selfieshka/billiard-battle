@@ -34,13 +34,14 @@ public class ClientThread implements Runnable {
                 String response = inFromServer.readLine();
                 if (response != null) {
                     System.out.println("FROM SERVER: " + response);
+
                     List<String> responseParts = Arrays.stream(response.split("#"))
                             .filter(val -> !val.isEmpty())
                             .toList();
 
                     switch (responseParts.getFirst()) {
                         case "V":
-                            GameScene.ball[0].setVelocity(
+                            GameScene.getBalls()[0].setVelocity(
                                     Double.parseDouble(responseParts.get(1)),
                                     Double.parseDouble(responseParts.get(2))
                             );
@@ -55,7 +56,7 @@ public class ClientThread implements Runnable {
                             gameController.stick.setVisible(false);
                             break;
                         case "M":
-                            GameScene.ball[0].setPosition(new Vector(
+                            GameScene.getBalls()[0].setPosition(new Vector(
                                     Double.parseDouble(responseParts.get(1)),
                                     Double.parseDouble(responseParts.get(2))
                             ));
@@ -171,12 +172,12 @@ public class ClientThread implements Runnable {
                                 Platform.runLater(() -> {
                                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                                     alert.setTitle("New Game Request!");
-                                    alert.setHeaderText(responseParts.get(1) + " challenged you to a match of " + responseParts.get(2) + " dollars!");
+                                    alert.setHeaderText("%s challenged you to a match of %s %s".formatted(responseParts.get(1), responseParts.get(2), "dollars!"));
                                     Optional<ButtonType> result = alert.showAndWait();
                                     if (result.get() == ButtonType.OK) {
-                                        BilliardBattleApplication.outToServer.println("play#" + responseParts.get(1) + "#" + responseParts.get(2));
+                                        BilliardBattleApplication.outToServer.println("play#%s%s%s".formatted(responseParts.get(1), "#", responseParts.get(2)));
                                     } else {
-                                        BilliardBattleApplication.outToServer.println("reject#" + responseParts.get(1));
+                                        BilliardBattleApplication.outToServer.println("reject#%s".formatted(responseParts.get(1)));
                                     }
                                 });
                             }
@@ -184,8 +185,8 @@ public class ClientThread implements Runnable {
                         case "reject":
                             Platform.runLater(() -> {
                                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                alert.setTitle("Error!");
-                                alert.setHeaderText("Opponent is afraid to play with you!!");
+                                alert.setTitle("Ошибка!");
+                                alert.setHeaderText("Противник отклонил приглашение!");
                                 alert.show();
                             });
                             break;
