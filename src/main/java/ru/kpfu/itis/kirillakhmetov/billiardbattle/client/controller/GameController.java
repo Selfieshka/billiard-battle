@@ -40,9 +40,9 @@ public class GameController {
 
     @FXML
     public void initialize() {
-        Image stickImg = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/cuesticks/cue-stick.png")));
-        Image border1Img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/ballimages/img1.jpg")));
-        Image border2Img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/ballimages/img2.jpg")));
+        Image stickImg = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/cue-sticks/cue-stick.png")));
+        Image border1Img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/table/border1.jpg")));
+        Image border2Img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/table/border2.jpg")));
         stick.setImage(stickImg);
         border1.setImage(border1Img);
         border2.setImage(border1Img);
@@ -51,7 +51,7 @@ public class GameController {
     }
 
     public void moveLine(MouseEvent event) {
-        if (GameScene.isIsTurn() && !GameScene.isGameOver()
+        if (GameScene.isTurn() && !GameScene.isGameOver()
                 && !GameScene.isGamePause() && GameScene.getPlayer1().isMyTurn()) {
             double x1 = GameScene.getCueBall().getPosition().getX(), y1 = GameScene.getCueBall().getPosition().getY();
             double x2 = event.getSceneX(), y2 = event.getSceneY();
@@ -137,7 +137,7 @@ public class GameController {
     }
 
     public void released(MouseEvent event) {
-        if (GameScene.isIsTurn() && !GameScene.isGameOver()
+        if (GameScene.isTurn() && !GameScene.isGameOver()
                 && !GameScene.isGamePause() && GameScene.getPlayer1().isMyTurn()) {
             double x = event.getSceneX();
             double y = event.getSceneY();
@@ -171,7 +171,7 @@ public class GameController {
 
     public void mereDaw() {
         double cueBallVelocity;
-        if (GameScene.isIsTurn() && !GameScene.isGameOver() && xp != -1 && yp != -1 && !GameScene.isGamePause() && GameScene.getPlayer1().isMyTurn()) {
+        if (GameScene.isTurn() && !GameScene.isGameOver() && xp != -1 && yp != -1 && !GameScene.isGamePause() && GameScene.getPlayer1().isMyTurn()) {
             cueBallVelocity = velocitySlider.getValue();
             if (cueBallVelocity != 0) {
                 line.setVisible(false);

@@ -68,7 +68,6 @@ public class ClientThread implements Runnable {
                         case "login2":
                             GameScene.getPlayer2().setUsername(responseParts.get(1));
                             GameScene.getPlayer2().setId(responseParts.get(2));
-                            GameScene.setImage2(responseParts.get(2));
                             GameScene.setBet(Integer.parseInt(responseParts.get(3)));
                             if (responseParts.get(4).equals("true")) {
                                 GameScene.getPlayer2().setMyTurn(false);
@@ -118,7 +117,6 @@ public class ClientThread implements Runnable {
                                 }
                                 GameScene.getPlayer1().setUsername(responseParts.get(1));
                                 GameScene.getPlayer1().setId(responseParts.get(2));
-                                GameScene.setImage1(responseParts.get(2));
                                 GameScene.getPlayer1().setBalance(Integer.parseInt(responseParts.get(3)));
                             }
                             break;

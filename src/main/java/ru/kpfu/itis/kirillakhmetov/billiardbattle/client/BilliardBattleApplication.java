@@ -10,7 +10,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene.GameScene;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene.MenuScene;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.util.ClientThread;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.server.entity.ServerProperties;
 
@@ -49,20 +48,19 @@ public class BilliardBattleApplication extends Application {
             Parent loginParent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/login.fxml")));
             Parent registerParent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/register.fxml")));
             Parent onlinePlayersParent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/online-players.fxml")));
+            Parent menuParent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/menu.fxml")));
             FXMLLoader billiardLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("/view/billiard-table.fxml")));
             Parent billiardParent = billiardLoader.load();
 
             login = new Scene(loginParent);
             register = new Scene(registerParent);
             onlinePlayers = new Scene(onlinePlayersParent);
+            menu = new Scene(menuParent);
 
-            Group menuGroup = new Group();
             Group gameGroup = new Group();
 
-            menu = new Scene(menuGroup, 1100, 700);
             game = new Scene(gameGroup, 1100, 700, Color.rgb(51, 102, 153));
 
-            MenuScene menuScene = new MenuScene(menuGroup, stage, menu);
             GameScene gameScene = new GameScene(gameGroup, game, menu, billiardParent, window, billiardLoader.getController());
             gameScene.startGame();
 
@@ -72,8 +70,6 @@ public class BilliardBattleApplication extends Application {
 
             window.setScene(login);
             windowCloseRequest();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
