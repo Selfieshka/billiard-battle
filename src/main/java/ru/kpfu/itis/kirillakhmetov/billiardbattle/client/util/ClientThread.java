@@ -142,13 +142,13 @@ public class ClientThread implements Runnable {
                                 });
                             }
                             break;
-                        case "startActive":
+                        case START_ACTIVE_PLAYER_LIST:
                             OnlinePlayersController.setStrings(FXCollections.observableArrayList());
                             break;
                         case ACTIVE_PLAYER_LIST:
                             OnlinePlayersController.getStrings().add(responseParts.get(1));
                             break;
-                        case "endActive":
+                        case END_ACTIVE_PLAYER_LIST:
                             Platform.runLater(new Runnable() {
                                 @Override
                                 public void run() {

@@ -135,13 +135,13 @@ public class PlayerThread implements Runnable {
     }
 
     private void sendActivePlayers(String username) {
-        outToMyClient.println("startActive#");
+        outToMyClient.println(START_ACTIVE_PLAYER_LIST + DELIMITER);
         for (PlayerThread playerThread : playerThreads) {
             if (playerThread.getThisPlayer().isLoggedIn() && !playerThread.getThisPlayer().getName().equals(username) && !playerThread.getThisPlayer().isPlaying()) {
                 outToMyClient.println(ProtocolMessageCreator.create(ACTIVE_PLAYER_LIST, playerThread.getThisPlayer().getName()));
             }
         }
-        outToMyClient.println("#endActive");
+        outToMyClient.println(DELIMITER + END_ACTIVE_PLAYER_LIST);
     }
 
     private void updateMoneyAfterEndGame(String player1, String player2, int bet) {
