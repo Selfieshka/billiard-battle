@@ -13,7 +13,7 @@ public class Player {
     private String password;
     private int balance;
     private boolean win;
-    private int ballType;
+    private BallType ballType;
     private boolean isMyTurn;
     private boolean allBallsPotted;
 

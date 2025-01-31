@@ -25,6 +25,7 @@ import ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolMessageCreato
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.BallType.*;
 import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProperties.*;
 
 
@@ -148,27 +149,27 @@ public class GameScene {
     }
 
     public void initializeBalls() {
-        balls[4] = new Ball(865, 325, "/img/ball3D/4.png", 1, 4);
-        balls[12] = new Ball(865, 350, "/img/ball3D/12.png", 2, 12);
-        balls[3] = new Ball(865, 375, "/img/ball3D/3.png", 1, 3);
-        balls[9] = new Ball(865, 400, "/img/ball3D/9.png", 2, 9);
-        balls[7] = new Ball(865, 425, "/img/ball3D/7.png", 1, 7);
+        balls[4] = new Ball(865, 325, "/img/ball3D/4.png", SOLID_BALL, 4);
+        balls[12] = new Ball(865, 350, "/img/ball3D/12.png", STRIPED_BALL, 12);
+        balls[3] = new Ball(865, 375, "/img/ball3D/3.png", SOLID_BALL, 3);
+        balls[9] = new Ball(865, 400, "/img/ball3D/9.png", STRIPED_BALL, 9);
+        balls[7] = new Ball(865, 425, "/img/ball3D/7.png", SOLID_BALL, 7);
 
-        balls[1] = new Ball(841, 338, "/img/ball3D/1.png", 1, 1);
-        balls[15] = new Ball(841, 363, "/img/ball3D/15.png", 2, 15);
-        balls[2] = new Ball(841, 388, "/img/ball3D/2.png", 1, 2);
-        balls[5] = new Ball(841, 413, "/img/ball3D/5.png", 1, 5);
+        balls[1] = new Ball(841, 338, "/img/ball3D/1.png", SOLID_BALL, 1);
+        balls[15] = new Ball(841, 363, "/img/ball3D/15.png", STRIPED_BALL, 15);
+        balls[2] = new Ball(841, 388, "/img/ball3D/2.png", SOLID_BALL, 2);
+        balls[5] = new Ball(841, 413, "/img/ball3D/5.png", SOLID_BALL, 5);
 
-        balls[14] = new Ball(817, 350, "/img/ball3D/14.png", 2, 14);
-        balls[8] = new Ball(817, 375, "/img/ball3D/8.png", 3, 8);
-        balls[10] = new Ball(817, 400, "/img/ball3D/10.png", 2, 10);
+        balls[14] = new Ball(817, 350, "/img/ball3D/14.png", STRIPED_BALL, 14);
+        balls[8] = new Ball(817, 375, "/img/ball3D/8.png", BLACK_BALL, 8);
+        balls[10] = new Ball(817, 400, "/img/ball3D/10.png", STRIPED_BALL, 10);
 
-        balls[11] = new Ball(793, 363, "/img/ball3D/11.png", 2, 11);
-        balls[6] = new Ball(793, 388, "/img/ball3D/6.png", 1, 6);
+        balls[11] = new Ball(793, 363, "/img/ball3D/11.png", STRIPED_BALL, 11);
+        balls[6] = new Ball(793, 388, "/img/ball3D/6.png", SOLID_BALL, 6);
 
-        balls[13] = new Ball(769, 375, "/img/ball3D/13.png", 2, 13);
+        balls[13] = new Ball(769, 375, "/img/ball3D/13.png", STRIPED_BALL, 13);
 
-        balls[0] = new Ball(346, 375, "/img/ball3D/0.png", 0, 0);
+        balls[0] = new Ball(346, 375, "/img/ball3D/0.png", CUE_BALL, 0);
 
         for (int i = 0; i < 16; i++) {
             group.getChildren().add(balls[i].DrawBall());
@@ -216,8 +217,8 @@ public class GameScene {
         }
         player1.setWin(false);
         player2.setWin(false);
-        player1.setBallType(0);
-        player2.setBallType(0);
+        player1.setBallType(null);
+        player2.setBallType(null);
         player2.setAllBallsPotted(false);
         player1.setAllBallsPotted(false);
     }
@@ -339,7 +340,7 @@ public class GameScene {
     }
 
     private void checkAllPottedBalls() {
-        if (player1.getBallType() == 0)
+        if (player1.getBallType() == null)
             return;
         boolean f = false;
         if (player1.isMyTurn()) {
@@ -350,7 +351,7 @@ public class GameScene {
     }
 
     private void checkPottedBallNow(boolean f, Player player1) {
-        if (player1.getBallType() == 1) {
+        if (player1.getBallType().equals(SOLID_BALL)) {
             for (int i = 1; i <= 7; i++) {
                 if (!potted[i]) {
                     f = true;
@@ -378,20 +379,20 @@ public class GameScene {
             balls[ball_num].getPosition().setY(balls[ball_num].getPosition().getY() + balls[ball_num].getVelocity().getY());
             for (Ball b : balls) {
                 if (ball_num != b.getBallNumber() && balls[ball_num].collides(b)) {
-                    if (ball_num == 0 && !flagForOtherTypeBallCollisionFoulCheck && player1.getBallType() == 0) {
+                    if (ball_num == 0 && !flagForOtherTypeBallCollisionFoulCheck && player1.getBallType() == null) {
                         flagForOtherTypeBallCollisionFoulCheck = true;
-                        if (b.getBallType() == 3) {
+                        if (b.getBallType().equals(BLACK_BALL)) {
                             flagForFoulCheck = true;
                         }
                     }
-                    if (ball_num == 0 && !flagForOtherTypeBallCollisionFoulCheck && player1.getBallType() != 0) {
+                    if (ball_num == 0 && !flagForOtherTypeBallCollisionFoulCheck && player1.getBallType() != null) {
                         flagForOtherTypeBallCollisionFoulCheck = true;
                         if (player1.isMyTurn()) {
-                            if (player1.getBallType() != b.getBallType()) {
+                            if (!player1.getBallType().equals(b.getBallType())) {
                                 flagForFoulCheck = b.getBallNumber() != 8 || !player1.isAllBallsPotted();
                             }
                         } else {
-                            if (player2.getBallType() != b.getBallType()) {
+                            if (!player2.getBallType().equals(b.getBallType())) {
                                 flagForFoulCheck = b.getBallNumber() != 8 || !player2.isAllBallsPotted();
                             }
                         }
@@ -459,27 +460,27 @@ public class GameScene {
                 }
             }
 
-        } else if (turnNum >= 2 && player1.getBallType() == 0) {
+        } else if (turnNum >= 2 && player1.getBallType() == null) {
             if (thisTurnPottedBalls.isEmpty()) {
                 flag = true;
             } else {
                 int firstPuttedBallNum = thisTurnPottedBalls.getFirst();
                 if (firstPuttedBallNum >= 1 && firstPuttedBallNum < 8) {
                     if (player1.isMyTurn()) {
-                        player1.setBallType(1);
-                        player2.setBallType(2);
+                        player1.setBallType(SOLID_BALL);
+                        player2.setBallType(STRIPED_BALL);
                     } else {
-                        player1.setBallType(2);
-                        player2.setBallType(1);
+                        player1.setBallType(STRIPED_BALL);
+                        player2.setBallType(SOLID_BALL);
                     }
                     showLabel();
                 } else if (firstPuttedBallNum >= 9 && firstPuttedBallNum <= 15) {
                     if (player1.isMyTurn()) {
-                        player1.setBallType(2);
-                        player2.setBallType(1);
+                        player1.setBallType(STRIPED_BALL);
+                        player2.setBallType(SOLID_BALL);
                     } else {
-                        player1.setBallType(1);
-                        player2.setBallType(2);
+                        player1.setBallType(STRIPED_BALL);
+                        player2.setBallType(STRIPED_BALL);
                     }
                     showLabel();
                 }
@@ -504,7 +505,7 @@ public class GameScene {
             } else {
                 int firstPuttedBallNum = thisTurnPottedBalls.getFirst();
                 if (player1.isMyTurn()) {
-                    if (player1.getBallType() != balls[firstPuttedBallNum].getBallType()) {
+                    if (!player1.getBallType().equals(balls[firstPuttedBallNum].getBallType())) {
                         flag = true;
                     }
                     for (Integer thisTurnPottedBall : thisTurnPottedBalls) {
@@ -518,7 +519,7 @@ public class GameScene {
                         }
                     }
                 } else {
-                    if (player2.getBallType() != balls[firstPuttedBallNum].getBallType()) {
+                    if (!player2.getBallType().equals(balls[firstPuttedBallNum].getBallType())) {
                         flag = true;
                     }
                     for (Integer thisTurnPottedBall : thisTurnPottedBalls) {
@@ -545,7 +546,7 @@ public class GameScene {
 
     private void checkPottedBallType(Player player2) {
         boolean flag = false;
-        if (player2.getBallType() == 1) {
+        if (player2.getBallType().equals(SOLID_BALL)) {
             for (int i = 1; i <= 7; i++) {
                 if (!potted[i]) {
                     flag = true;
@@ -572,7 +573,7 @@ public class GameScene {
         labelForBallTypePlayer2.setLayoutX(719);
         labelForBallTypePlayer1.setLayoutY(624);
         labelForBallTypePlayer2.setLayoutY(624);
-        if (player1.getBallType() == 1) {
+        if (player1.getBallType().equals(SOLID_BALL)) {
             labelForBallTypePlayer1.setText("%s сплошные".formatted(player1.getUsername()));
             labelForBallTypePlayer2.setText("%s полосатые".formatted(player2.getUsername()));
             int place1 = 360, place2 = 147;

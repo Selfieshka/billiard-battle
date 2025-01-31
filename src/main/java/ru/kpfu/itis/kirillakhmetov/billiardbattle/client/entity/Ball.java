@@ -20,11 +20,11 @@ public class Ball {
     private Vector velocity;
     private final Sphere sphere;
     private final String image;
-    private final int ballType;
+    private final BallType ballType;
     private final int ballNumber;
     private boolean isDropped;
 
-    public Ball(double positionX, double positionY, String image, int ballType, int ballNumber) {
+    public Ball(double positionX, double positionY, String image, BallType ballType, int ballNumber) {
         this.position = new Vector(positionX, positionY);
         this.initialPosition = new Vector(positionX, positionY);
         this.velocity = new Vector(0, 0);
