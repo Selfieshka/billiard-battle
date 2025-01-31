@@ -16,15 +16,15 @@ import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProper
 
 public class LoginController implements Initializable {
     @FXML
-    AnchorPane parent;
+    private AnchorPane parent;
     @FXML
-    Button login;
+    private Button login;
     @FXML
-    Button register;
+    private Button register;
     @FXML
-    TextField username;
+    private TextField username;
     @FXML
-    PasswordField password;
+    private PasswordField password;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {

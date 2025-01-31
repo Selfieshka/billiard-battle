@@ -15,14 +15,14 @@ import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProper
 
 public class OnlinePlayersController implements Initializable {
     @FXML
-    Button back;
+    private Button back;
     @FXML
-    Button play;
+    private Button play;
     @FXML
-    TextField money;
+    private TextField money;
     @FXML
-    ListView<String> active;
-    public static ObservableList<String> strings;
+    private ListView<String> active;
+    private static ObservableList<String> strings;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -50,5 +50,13 @@ public class OnlinePlayersController implements Initializable {
                         REQUEST_CHALLENGE, active.getSelectionModel().getSelectedItem(), money.getText()));
             }
         });
+    }
+
+    public static ObservableList<String> getStrings() {
+        return OnlinePlayersController.strings;
+    }
+
+    public static void setStrings(ObservableList<String> strings) {
+        OnlinePlayersController.strings = strings;
     }
 }

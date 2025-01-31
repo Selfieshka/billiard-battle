@@ -16,15 +16,15 @@ import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProper
 
 public class RegisterController implements Initializable {
     @FXML
-    TextField username;
+    private TextField username;
     @FXML
-    PasswordField password;
+    private PasswordField password;
     @FXML
-    PasswordField repassword;
+    private PasswordField repassword;
     @FXML
-    Button signUp;
+    private Button signUp;
     @FXML
-    Button back;
+    private Button back;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

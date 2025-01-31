@@ -416,10 +416,10 @@ public class GameScene {
     private void moveCueBall() {
         balls[0].getSphere().addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
             if (isTurn && isFoul && player1.isMyTurn()) {
-                gameController.stick.setVisible(false);
-                gameController.circle.setVisible(false);
-                gameController.line.setVisible(false);
-                gameController.predictedLine.setVisible(false);
+                gameController.getStick().setVisible(false);
+                gameController.getCircle().setVisible(false);
+                gameController.getLine().setVisible(false);
+                gameController.getPredictedLine().setVisible(false);
                 balls[0].getSphere().setCursor(Cursor.CLOSED_HAND);
                 if ((event.getSceneX() <= 937 && event.getSceneX() >= 157) && (event.getSceneY() >= 180 && event.getSceneY() <= 568)) {
                     balls[0].setPosition(new Vector(event.getSceneX(), event.getSceneY()));
@@ -428,10 +428,10 @@ public class GameScene {
                 }
 
             } else if (isTurn && turnNum == 1 && player1.isMyTurn()) {
-                gameController.stick.setVisible(false);
-                gameController.circle.setVisible(false);
-                gameController.line.setVisible(false);
-                gameController.predictedLine.setVisible(false);
+                gameController.getStick().setVisible(false);
+                gameController.getCircle().setVisible(false);
+                gameController.getLine().setVisible(false);
+                gameController.getPredictedLine().setVisible(false);
                 balls[0].getSphere().setCursor(Cursor.CLOSED_HAND);
                 if ((event.getSceneX() <= 344 && event.getSceneX() >= 155) && (event.getSceneY() >= 170 && event.getSceneY() <= 570)) {
                     balls[0].setPosition(new Vector(event.getSceneX(), event.getSceneY()));

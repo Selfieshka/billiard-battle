@@ -50,13 +50,13 @@ public class ClientThread implements Runnable {
                             );
                             break;
                         case CUE_ROTATE:
-                            gameController.stick.setVisible(true);
-                            gameController.stick.setRotate(Double.parseDouble(responseParts.get(1)));
-                            gameController.stick.setLayoutX(Double.parseDouble(responseParts.get(2)));
-                            gameController.stick.setLayoutY(Double.parseDouble(responseParts.get(3)));
+                            gameController.getStick().setVisible(true);
+                            gameController.getStick().setRotate(Double.parseDouble(responseParts.get(1)));
+                            gameController.getStick().setLayoutX(Double.parseDouble(responseParts.get(2)));
+                            gameController.getStick().setLayoutY(Double.parseDouble(responseParts.get(3)));
                             break;
                         case PLAYER_HIT:
-                            gameController.stick.setVisible(false);
+                            gameController.getStick().setVisible(false);
                             break;
                         case BALL_MOVE:
                             GameScene.getBalls()[0].setPosition(new Vector(
@@ -143,10 +143,10 @@ public class ClientThread implements Runnable {
                             }
                             break;
                         case "startActive":
-                            OnlinePlayersController.strings = FXCollections.observableArrayList();
+                            OnlinePlayersController.setStrings(FXCollections.observableArrayList());
                             break;
                         case ACTIVE_PLAYER_LIST:
-                            OnlinePlayersController.strings.add(responseParts.get(1));
+                            OnlinePlayersController.getStrings().add(responseParts.get(1));
                             break;
                         case "endActive":
                             Platform.runLater(new Runnable() {

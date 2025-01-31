@@ -22,22 +22,21 @@ import static ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.GameParam
 import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProperties.CUE_ROTATE;
 import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProperties.PLAYER_HIT;
 
-
 public class GameController {
     @FXML
-    public Line line;
+    private Line line;
     @FXML
-    public Circle circle;
+    private Circle circle;
     @FXML
-    public ImageView border1, border2, border3, border4;
+    private ImageView border1, border2, border3, border4;
     @FXML
-    Slider velocitySlider;
+    private Slider velocitySlider;
     @FXML
-    Label velocityLabel;
+    private Label velocityLabel;
     @FXML
-    public ImageView stick;
+    private ImageView stick;
     @FXML
-    public Line predictedLine;
+    private Line predictedLine;
     private double ang;
     private double xp = -1, yp = -1;
 
@@ -195,5 +194,21 @@ public class GameController {
             velocitySlider.setValue(0);
             velocityLabel.setText("0");
         }
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public Circle getCircle() {
+        return circle;
+    }
+
+    public ImageView getStick() {
+        return stick;
+    }
+
+    public Line getPredictedLine() {
+        return predictedLine;
     }
 }
