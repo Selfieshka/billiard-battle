@@ -52,8 +52,9 @@ public class ClientThread implements Runnable {
                         case BALL_MOVE -> moveBall(Double.parseDouble(responseParts.get(1)),
                                 Double.parseDouble(responseParts.get(2)));
                         case TECH_LOSE -> loseTechnical();
-                        case GAME_INIT -> initGame(responseParts.get(1), responseParts.get(2),
-                                Integer.parseInt(responseParts.get(3)), responseParts.get(4));
+                        case GAME_INIT -> initGame(responseParts.get(1),
+                                Integer.parseInt(responseParts.get(2)),
+                                responseParts.get(3));
                         case AUTH_LOGIN -> signIn(responseParts);
                         case AUTH_REGISTER -> signUp(responseParts.get(1));
                         case START_ACTIVE_PLAYER_LIST -> startActivePlayerList();
@@ -176,14 +177,12 @@ public class ClientThread implements Runnable {
                 e.printStackTrace();
             }
             GameScene.getPlayer1().setUsername(responseParts.get(1));
-            GameScene.getPlayer1().setId(responseParts.get(2));
-            GameScene.getPlayer1().setBalance(Integer.parseInt(responseParts.get(3)));
+            GameScene.getPlayer1().setBalance(Integer.parseInt(responseParts.get(2)));
         }
     }
 
-    private void initGame(String username, String id, Integer bet, String flag) {
+    private void initGame(String username, Integer bet, String flag) {
         GameScene.getPlayer2().setUsername(username);
-        GameScene.getPlayer2().setId(id);
         GameScene.setBet(bet);
         if (flag.equals(LOGIC_TRUE)) {
             GameScene.getPlayer2().setMyTurn(false);

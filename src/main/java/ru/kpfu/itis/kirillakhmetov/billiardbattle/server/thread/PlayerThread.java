@@ -67,7 +67,7 @@ public class PlayerThread implements Runnable {
 
     private void signIn(String username, String password) {
         for (PlayerThread playerThread : activePlayers) {
-            if (playerThread.getThisPlayer().getName().equals(username) && playerThread.getThisPlayer().isLoggedIn()) {
+            if (playerThread.getThisPlayer().getUsername().equals(username) && playerThread.getThisPlayer().isLoggedIn()) {
                 outToMyClient.println(ProtocolMessageCreator.create(AUTH_LOGIN, LOGIC_FALSE));
                 return;
             }
@@ -78,14 +78,13 @@ public class PlayerThread implements Runnable {
             if (playerFromDb.isPresent()) {
                 Player player = playerFromDb.get();
                 thisPlayer = PlayerData.builder()
-                        .name(player.getUsername())
-                        .pass(player.getPassword())
-                        .fbID("0")
+                        .username(player.getUsername())
+                        .password(player.getPassword())
                         .money(player.getBalance())
                         .loggedIn(true)
                         .build();
                 outToMyClient.println(ProtocolMessageCreator.create(
-                        AUTH_LOGIN, player.getUsername(), 0, player.getBalance()));
+                        AUTH_LOGIN, player.getUsername(), player.getBalance()));
             }
         } else {
             outToMyClient.println(ProtocolMessageCreator.create(AUTH_LOGIN, LOGIC_FALSE));
@@ -115,7 +114,7 @@ public class PlayerThread implements Runnable {
 
     private void cancelInvite(String request, List<String> requestParts) {
         for (PlayerThread playerThread : activePlayers) {
-            if (playerThread.getThisPlayer().getName().equals(requestParts.get(1))) {
+            if (playerThread.getThisPlayer().getUsername().equals(requestParts.get(1))) {
                 playerThread.getOutToMyClient().println(request);
             }
         }
@@ -123,15 +122,15 @@ public class PlayerThread implements Runnable {
 
     private void setupGameSession(String opponent, int bet) {
         for (PlayerThread playerThread : activePlayers) {
-            if (playerThread.getThisPlayer().getName().equals(opponent) && playerThread.getThisPlayer().isLoggedIn()) {
+            if (playerThread.getThisPlayer().getUsername().equals(opponent) && playerThread.getThisPlayer().isLoggedIn()) {
                 outToClient = playerThread.getOutToMyClient();
                 playerThread.setOutToClient(outToMyClient);
                 thisPlayer.setPlaying(true);
                 playerThread.getThisPlayer().setPlaying(true);
                 outToMyClient.println(ProtocolMessageCreator.create(
-                        GAME_INIT, opponent, playerThread.getThisPlayer().getFbID(), bet, LOGIC_TRUE));
+                        GAME_INIT, opponent, bet, LOGIC_TRUE));
                 outToClient.println(ProtocolMessageCreator.create(
-                        GAME_INIT, thisPlayer.getName(), thisPlayer.getFbID(), bet, LOGIC_FALSE));
+                        GAME_INIT, thisPlayer.getUsername(), bet, LOGIC_FALSE));
                 break;
             }
         }
@@ -145,8 +144,8 @@ public class PlayerThread implements Runnable {
                 outToMyClient.println(ProtocolMessageCreator.create(REQUEST_CHALLENGE, LOGIC_FALSE, money));
             } else {
                 for (PlayerThread playerThread : activePlayers) {
-                    if (playerThread.getThisPlayer().getName().equals(name) && playerThread.getThisPlayer().isLoggedIn()) {
-                        playerThread.getOutToMyClient().println(ProtocolMessageCreator.create(REQUEST_CHALLENGE, thisPlayer.getName(), money));
+                    if (playerThread.getThisPlayer().getUsername().equals(name) && playerThread.getThisPlayer().isLoggedIn()) {
+                        playerThread.getOutToMyClient().println(ProtocolMessageCreator.create(REQUEST_CHALLENGE, thisPlayer.getUsername(), money));
                         break;
                     }
                 }
@@ -159,8 +158,8 @@ public class PlayerThread implements Runnable {
     private void sendActivePlayers(String username) {
         outToMyClient.println(START_ACTIVE_PLAYER_LIST + DELIMITER);
         for (PlayerThread playerThread : activePlayers) {
-            if (playerThread.getThisPlayer().isLoggedIn() && !playerThread.getThisPlayer().getName().equals(username) && !playerThread.getThisPlayer().isPlaying()) {
-                outToMyClient.println(ProtocolMessageCreator.create(ACTIVE_PLAYER_LIST, playerThread.getThisPlayer().getName()));
+            if (playerThread.getThisPlayer().isLoggedIn() && !playerThread.getThisPlayer().getUsername().equals(username) && !playerThread.getThisPlayer().isPlaying()) {
+                outToMyClient.println(ProtocolMessageCreator.create(ACTIVE_PLAYER_LIST, playerThread.getThisPlayer().getUsername()));
             }
         }
         outToMyClient.println(DELIMITER + END_ACTIVE_PLAYER_LIST);
@@ -170,7 +169,7 @@ public class PlayerThread implements Runnable {
         playerService.updateMoney(player1, player2, bet);
         thisPlayer.setPlaying(false);
         for (PlayerThread playerThread : activePlayers) {
-            if (playerThread.getThisPlayer().getName().equals(player2)) {
+            if (playerThread.getThisPlayer().getUsername().equals(player2)) {
                 playerThread.getThisPlayer().setPlaying(false);
             }
         }

@@ -8,7 +8,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class Player {
-    private String id;
     private String username;
     private String password;
     private int balance;
@@ -19,11 +18,9 @@ public class Player {
 
     public Player() {
         this.username = "";
-        this.id = "";
     }
 
     public Player(String name) {
-        this.id = "";
         this.username = name;
     }
 }

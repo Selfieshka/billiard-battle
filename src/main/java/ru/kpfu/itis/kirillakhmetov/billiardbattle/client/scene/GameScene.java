@@ -327,7 +327,11 @@ public class GameScene {
         if (thisTurnPottedBalls.contains(0))
             alert.setHeaderText("Вы забили белый шар");
         else if (flagForOtherTypeBallCollisionFoulCheck)
-            alert.setHeaderText("Вы должны попасть по мячу своего типа");
+            if (player1.isMyTurn()) {
+                alert.setHeaderText("Игрок %s должен был попасть по мячу своего типа".formatted(player2.getUsername()));
+            } else {
+                alert.setHeaderText("Игрок %s должен был попасть по мячу своего типа".formatted(player1.getUsername()));
+            }
         else
             alert.setHeaderText("Вы должны попасть по шару");
 
