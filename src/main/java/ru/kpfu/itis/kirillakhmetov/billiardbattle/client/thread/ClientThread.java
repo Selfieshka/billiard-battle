@@ -43,161 +43,186 @@ public class ClientThread implements Runnable {
                             .toList();
 
                     switch (responseParts.getFirst()) {
-                        case SHOT_VELOCITY:
-                            GameScene.getBalls()[0].setVelocity(
-                                    Double.parseDouble(responseParts.get(1)),
-                                    Double.parseDouble(responseParts.get(2))
-                            );
-                            break;
-                        case CUE_ROTATE:
-                            gameController.getStick().setVisible(true);
-                            gameController.getStick().setRotate(Double.parseDouble(responseParts.get(1)));
-                            gameController.getStick().setLayoutX(Double.parseDouble(responseParts.get(2)));
-                            gameController.getStick().setLayoutY(Double.parseDouble(responseParts.get(3)));
-                            break;
-                        case PLAYER_HIT:
-                            gameController.getStick().setVisible(false);
-                            break;
-                        case BALL_MOVE:
-                            GameScene.getBalls()[0].setPosition(new Vector(
-                                    Double.parseDouble(responseParts.get(1)),
-                                    Double.parseDouble(responseParts.get(2))
-                            ));
-                            break;
-                        case TECH_LOSE:
-                            GameScene.getPlayer1().setWin(true);
-                            GameScene.getPlayer2().setWin(false);
-                            GameScene.setGameOver(true);
-                            break;
-                        case GAME_INIT:
-                            GameScene.getPlayer2().setUsername(responseParts.get(1));
-                            GameScene.getPlayer2().setId(responseParts.get(2));
-                            GameScene.setBet(Integer.parseInt(responseParts.get(3)));
-                            if (responseParts.get(4).equals(LOGIC_TRUE)) {
-                                GameScene.getPlayer2().setMyTurn(false);
-                                GameScene.getPlayer1().setMyTurn(true);
-                            } else {
-                                GameScene.getPlayer1().setMyTurn(false);
-                                GameScene.getPlayer2().setMyTurn(true);
-                            }
-                            Platform.runLater(() -> {
-                                try {
-                                    BilliardBattleApplication.window.setScene(BilliardBattleApplication.game);
-                                } catch (Exception e1) {
-                                    e1.printStackTrace();
-                                }
-                            });
-                            break;
-                        case AUTH_LOGIN:
-                            if (responseParts.get(1).equals(LOGIC_FALSE)) {
-                                if (responseParts.size() > 2) {
-                                    Platform.runLater(() -> {
-                                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                                        alert.setTitle("Ошибка");
-                                        alert.setHeaderText("Невозможно войти");
-                                        alert.setContentText("Вы уже вошли в аккаунт на другом устройстве!");
-                                        alert.show();
-                                    });
-                                } else {
-                                    Platform.runLater(() -> {
-                                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                                        alert.setTitle("Ошибка");
-                                        alert.setHeaderText("Невозможно войти");
-                                        alert.setContentText("Имя или пароль неверные");
-                                        alert.show();
-                                    });
-                                }
-                            } else {
-                                try {
-                                    Platform.runLater(() -> {
-                                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                        alert.setTitle("Добро пожаловать");
-                                        alert.setHeaderText("Вошли как %s".formatted(responseParts.get(1)));
-                                        alert.show();
-                                        BilliardBattleApplication.window.setScene(BilliardBattleApplication.menu);
-                                    });
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                GameScene.getPlayer1().setUsername(responseParts.get(1));
-                                GameScene.getPlayer1().setId(responseParts.get(2));
-                                GameScene.getPlayer1().setBalance(Integer.parseInt(responseParts.get(3)));
-                            }
-                            break;
-                        case AUTH_REGISTER:
-                            if (responseParts.get(1).equals(LOGIC_TRUE)) {
-                                Platform.runLater(() -> {
-                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                    alert.setTitle("Добро пожаловать!");
-                                    alert.setHeaderText("Поздравляем! Регистрация прошла успешно!");
-                                    alert.show();
-                                    BilliardBattleApplication.window.setScene(BilliardBattleApplication.login);
-                                });
-                            } else {
-                                Platform.runLater(() -> {
-                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                    alert.setTitle("Ошибка");
-                                    alert.setHeaderText("Такое имя уже занято");
-                                    alert.show();
-                                });
-                            }
-                            break;
-                        case START_ACTIVE_PLAYER_LIST:
-                            OnlinePlayersController.setStrings(FXCollections.observableArrayList());
-                            break;
-                        case ACTIVE_PLAYER_LIST:
-                            OnlinePlayersController.getStrings().add(responseParts.get(1));
-                            break;
-                        case END_ACTIVE_PLAYER_LIST:
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        BilliardBattleApplication.onlinePlayers = new Scene(FXMLLoader.load(Objects.requireNonNull(
-                                                getClass().getResource("/view/online-players.fxml"))));
-                                        BilliardBattleApplication.window.setScene(BilliardBattleApplication.onlinePlayers);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-                            break;
-                        case REQUEST_CHALLENGE:
-                            if (responseParts.get(1).equals(LOGIC_FALSE)) {
-                                Platform.runLater(() -> {
-                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                    alert.setTitle("Ошибка");
-                                    alert.setHeaderText("У оппонента не хватает денег");
-                                    alert.setContentText("Количество денег у оппонента %s".formatted(responseParts.get(2)));
-                                    alert.show();
-                                });
-                            } else {
-                                Platform.runLater(() -> {
-                                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                                    alert.setTitle("Новое приглашение в игру!");
-                                    alert.setHeaderText("%s приглашает вас в игру на %s %s".formatted(responseParts.get(1), responseParts.get(2), "монет!"));
-                                    Optional<ButtonType> result = alert.showAndWait();
-                                    if (result.get() == ButtonType.OK) {
-                                        BilliardBattleApplication.outToServer.println(ProtocolMessageCreator.create(GAME_START, responseParts.get(1), responseParts.get(2)));
-                                    } else {
-                                        BilliardBattleApplication.outToServer.println(ProtocolMessageCreator.create(CANCEL_INVITE, responseParts.get(1)));
-                                    }
-                                });
-                            }
-                            break;
-                        case CANCEL_INVITE:
-                            Platform.runLater(() -> {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                alert.setTitle("Ошибка!");
-                                alert.setHeaderText("Противник отклонил приглашение!");
-                                alert.show();
-                            });
-                            break;
+                        case SHOT_VELOCITY ->
+                                shotVelocity(Double.parseDouble(responseParts.get(1)), Double.parseDouble(responseParts.get(2)));
+                        case CUE_ROTATE -> rotateCue(Double.parseDouble(responseParts.get(1)),
+                                Double.parseDouble(responseParts.get(2)),
+                                Double.parseDouble(responseParts.get(3)));
+                        case PLAYER_HIT -> hitPlayer();
+                        case BALL_MOVE -> moveBall(Double.parseDouble(responseParts.get(1)),
+                                Double.parseDouble(responseParts.get(2)));
+                        case TECH_LOSE -> loseTechnical();
+                        case GAME_INIT -> initGame(responseParts.get(1), responseParts.get(2),
+                                Integer.parseInt(responseParts.get(3)), responseParts.get(4));
+                        case AUTH_LOGIN -> signIn(responseParts);
+                        case AUTH_REGISTER -> signUp(responseParts.get(1));
+                        case START_ACTIVE_PLAYER_LIST -> startActivePlayerList();
+                        case ACTIVE_PLAYER_LIST -> addPlayerToList(responseParts.get(1));
+                        case END_ACTIVE_PLAYER_LIST -> endActivePlayerList();
+                        case REQUEST_CHALLENGE -> createRequestChallenge(responseParts.get(1), responseParts.get(2));
+                        case CANCEL_INVITE -> cancelInvite();
                     }
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private void cancelInvite() {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Ошибка!");
+            alert.setHeaderText("Противник отклонил приглашение!");
+            alert.show();
+        });
+    }
+
+    private void createRequestChallenge(String username, String money) {
+        if (username.equals(LOGIC_FALSE)) {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Ошибка");
+                alert.setHeaderText("У оппонента не хватает денег");
+                alert.setContentText("Количество денег у оппонента %s".formatted(money));
+                alert.show();
+            });
+        } else {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Новое приглашение в игру!");
+                alert.setHeaderText("%s приглашает вас в игру на %s %s".formatted(username, money, "монет!"));
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK) {
+                    BilliardBattleApplication.outToServer.println(ProtocolMessageCreator.create(GAME_START, username, money));
+                } else {
+                    BilliardBattleApplication.outToServer.println(ProtocolMessageCreator.create(CANCEL_INVITE, username));
+                }
+            });
+        }
+    }
+
+    private void endActivePlayerList() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    BilliardBattleApplication.onlinePlayers = new Scene(FXMLLoader.load(Objects.requireNonNull(
+                            getClass().getResource("/view/online-players.fxml"))));
+                    BilliardBattleApplication.window.setScene(BilliardBattleApplication.onlinePlayers);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void addPlayerToList(String username) {
+        OnlinePlayersController.getStrings().add(username);
+    }
+
+    private void startActivePlayerList() {
+        OnlinePlayersController.setStrings(FXCollections.observableArrayList());
+    }
+
+    private void signUp(String flag) {
+        if (flag.equals(LOGIC_TRUE)) {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Добро пожаловать!");
+                alert.setHeaderText("Поздравляем! Регистрация прошла успешно!");
+                alert.show();
+                BilliardBattleApplication.window.setScene(BilliardBattleApplication.login);
+            });
+        } else {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Ошибка");
+                alert.setHeaderText("Такое имя уже занято");
+                alert.show();
+            });
+        }
+    }
+
+    private void signIn(List<String> responseParts) {
+        if (responseParts.get(1).equals(LOGIC_FALSE)) {
+            if (responseParts.size() > 2) {
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Ошибка");
+                    alert.setHeaderText("Невозможно войти");
+                    alert.setContentText("Вы уже вошли в аккаунт на другом устройстве!");
+                    alert.show();
+                });
+            } else {
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Ошибка");
+                    alert.setHeaderText("Невозможно войти");
+                    alert.setContentText("Имя или пароль неверные");
+                    alert.show();
+                });
+            }
+        } else {
+            try {
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Добро пожаловать");
+                    alert.setHeaderText("Вошли как %s".formatted(responseParts.get(1)));
+                    alert.show();
+                    BilliardBattleApplication.window.setScene(BilliardBattleApplication.menu);
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            GameScene.getPlayer1().setUsername(responseParts.get(1));
+            GameScene.getPlayer1().setId(responseParts.get(2));
+            GameScene.getPlayer1().setBalance(Integer.parseInt(responseParts.get(3)));
+        }
+    }
+
+    private void initGame(String username, String id, Integer bet, String flag) {
+        GameScene.getPlayer2().setUsername(username);
+        GameScene.getPlayer2().setId(id);
+        GameScene.setBet(bet);
+        if (flag.equals(LOGIC_TRUE)) {
+            GameScene.getPlayer2().setMyTurn(false);
+            GameScene.getPlayer1().setMyTurn(true);
+        } else {
+            GameScene.getPlayer1().setMyTurn(false);
+            GameScene.getPlayer2().setMyTurn(true);
+        }
+        Platform.runLater(() -> {
+            try {
+                BilliardBattleApplication.window.setScene(BilliardBattleApplication.game);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+        });
+    }
+
+    private void loseTechnical() {
+        GameScene.getPlayer1().setWin(true);
+        GameScene.getPlayer2().setWin(false);
+        GameScene.setGameOver(true);
+    }
+
+    private void moveBall(double x, double y) {
+        GameScene.getBalls()[0].setPosition(new Vector(x, y));
+    }
+
+    private void hitPlayer() {
+        gameController.getStick().setVisible(false);
+    }
+
+    private void rotateCue(double v, double v1, double v2) {
+        gameController.getStick().setVisible(true);
+        gameController.getStick().setRotate(v);
+        gameController.getStick().setLayoutX(v1);
+        gameController.getStick().setLayoutY(v2);
+    }
+
+    private void shotVelocity(Double x, Double y) {
+        GameScene.getBalls()[0].setVelocity(x, y);
     }
 }
