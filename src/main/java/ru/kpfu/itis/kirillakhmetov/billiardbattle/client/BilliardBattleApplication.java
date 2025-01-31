@@ -83,9 +83,9 @@ public class BilliardBattleApplication extends Application {
             e.consume();
             if (window.getScene() == game) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Exit?");
-                alert.setHeaderText("Confirmation Dialog");
-                alert.setContentText("You will lose the game if you leave!!");
+                alert.setTitle("Выход");
+                alert.setHeaderText("Подтверждение действия");
+                alert.setContentText("Вы проиграете игру, если выйдете!");
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.get() == ButtonType.OK) {
                     GameScene.getPlayer2().setWin(true);
@@ -97,9 +97,9 @@ public class BilliardBattleApplication extends Application {
                 }
             } else {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Exit?");
-                alert.setHeaderText("Confirmation Dialog");
-                alert.setContentText("Sure you want to exit the game?");
+                alert.setTitle("Выход");
+                alert.setHeaderText("Подтверждение действия");
+                alert.setContentText("Вы уверены, что хотите выйти?");
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.get() == ButtonType.OK) {
                     if (window.getScene() != login) {

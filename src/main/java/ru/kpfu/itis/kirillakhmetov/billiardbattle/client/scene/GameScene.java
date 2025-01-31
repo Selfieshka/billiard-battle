@@ -588,8 +588,8 @@ public class GameScene {
                 BallSolid[i].setVisible(true);
             }
         } else {
-            labelForBallTypePlayer1.setText(player1.getUsername() + " is Stripes");
-            labelForBallTypePlayer2.setText(player2.getUsername() + " is Solids");
+            labelForBallTypePlayer1.setText("%s полосатые".formatted(player1.getUsername()));
+            labelForBallTypePlayer2.setText("%s сплошные".formatted(player2.getUsername()));
             int place1 = 360;
             int place2 = 147;
             for (int i = 0; i < 7; i++) {
@@ -639,10 +639,10 @@ public class GameScene {
         labelForPlayerWins.setLayoutY(242);
         labelForPressAnyKey.setLayoutX(240);
         labelForPressAnyKey.setLayoutY(500);
-        labelForGameOver.setText("Game Over");
-        if (player1.isWin()) labelForPlayerWins.setText(player1.getUsername() + " Wins!");
-        else labelForPlayerWins.setText(player2.getUsername() + " Wins!");
-        labelForPressAnyKey.setText("Press Any Key To Continue");
+        labelForGameOver.setText("Игра окончена");
+        if (player1.isWin()) labelForPlayerWins.setText("%s выиграл!".formatted(player1.getUsername()));
+        else labelForPlayerWins.setText("%s выиграл!".formatted(player2.getUsername()));
+        labelForPressAnyKey.setText("Нажмите любую клавишу");
         labelForGameOver.getStyleClass().add("label-over");
         labelForPlayerWins.getStyleClass().add("label-over");
         labelForPressAnyKey.getStyleClass().add("label-over");

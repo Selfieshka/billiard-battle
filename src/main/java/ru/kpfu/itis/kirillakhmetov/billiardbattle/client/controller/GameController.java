@@ -17,8 +17,7 @@ import ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolMessageCreato
 
 import java.util.Objects;
 
-import static ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.GameParameters.BALL_RADIUS;
-import static ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.GameParameters.CUE_BALL_VELOCITY;
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.GameParameters.*;
 import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProperties.CUE_ROTATE;
 import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProperties.PLAYER_HIT;
 
@@ -135,7 +134,7 @@ public class GameController {
         double x = circle.getCenterX() - b.getPosition().getX();
         double y = circle.getCenterY() - b.getPosition().getY();
         double dist = Math.sqrt(x * x + y * y);
-        return dist - BALL_RADIUS * 2 <= 0 && dist - BALL_RADIUS >= -3;
+        return dist - BALL_DIAMETER <= 0 && dist - BALL_RADIUS >= -3;
     }
 
     public void released(MouseEvent event) {

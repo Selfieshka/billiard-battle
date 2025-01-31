@@ -382,7 +382,7 @@
         </ImageView>
         <Circle fx:id="circle" fill="#1f93ff00" stroke="WHITE" strokeType="INSIDE"/>
         <Label alignment="TOP_LEFT" layoutX="987.0" layoutY="624.0" prefHeight="40.0" prefWidth="117.0"
-               text="Ball Stack" textFill="#ff1f3d">
+               text="Забитые" textFill="#ff1f3d">
             <font>
                 <Font name="System Bold Italic" size="23.0"/>
             </font>
@@ -416,7 +416,7 @@
                 </Lighting>
             </effect>
         </Slider>
-        <Label alignment="TOP_LEFT" layoutX="14.0" layoutY="644.0" prefHeight="30.0" prefWidth="132.0" text="Velocity"
+        <Label alignment="TOP_LEFT" layoutX="14.0" layoutY="644.0" prefHeight="30.0" prefWidth="132.0" text="Сила"
                textFill="#ff1f3d">
             <font>
                 <Font name="System Bold Italic" size="18.0"/>

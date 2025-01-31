@@ -93,17 +93,17 @@ public class ClientThread implements Runnable {
                                 if (responseParts.size() > 2) {
                                     Platform.runLater(() -> {
                                         Alert alert = new Alert(Alert.AlertType.ERROR);
-                                        alert.setTitle("Error!");
-                                        alert.setHeaderText("Can't log you in!");
-                                        alert.setContentText("You are already logged in from another device!");
+                                        alert.setTitle("Ошибка");
+                                        alert.setHeaderText("Невозможно войти");
+                                        alert.setContentText("Вы уже вошли в аккаунт на другом устройстве!");
                                         alert.show();
                                     });
                                 } else {
                                     Platform.runLater(() -> {
                                         Alert alert = new Alert(Alert.AlertType.ERROR);
-                                        alert.setTitle("Error!");
-                                        alert.setHeaderText("Can't log you in!");
-                                        alert.setContentText("User name or password is not correct!");
+                                        alert.setTitle("Ошибка");
+                                        alert.setHeaderText("Невозможно войти");
+                                        alert.setContentText("Имя или пароль неверные");
                                         alert.show();
                                     });
                                 }
@@ -111,8 +111,8 @@ public class ClientThread implements Runnable {
                                 try {
                                     Platform.runLater(() -> {
                                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                        alert.setTitle("Welcome");
-                                        alert.setHeaderText("Logged in as " + responseParts.get(1));
+                                        alert.setTitle("Добро пожаловать");
+                                        alert.setHeaderText("Вошли как %s".formatted(responseParts.get(1)));
                                         alert.show();
                                         BilliardBattleApplication.window.setScene(BilliardBattleApplication.menu);
                                     });
@@ -128,16 +128,16 @@ public class ClientThread implements Runnable {
                             if (responseParts.get(1).equals(LOGIC_TRUE)) {
                                 Platform.runLater(() -> {
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                    alert.setTitle("Welcome");
-                                    alert.setHeaderText("Congratulations! Signed up successful!");
+                                    alert.setTitle("Добро пожаловать!");
+                                    alert.setHeaderText("Поздравляем! Регистрация прошла успешно!");
                                     alert.show();
                                     BilliardBattleApplication.window.setScene(BilliardBattleApplication.login);
                                 });
                             } else {
                                 Platform.runLater(() -> {
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                    alert.setTitle("Error!");
-                                    alert.setHeaderText("Username already in use");
+                                    alert.setTitle("Ошибка");
+                                    alert.setHeaderText("Такое имя уже занято");
                                     alert.show();
                                 });
                             }
@@ -166,16 +166,16 @@ public class ClientThread implements Runnable {
                             if (responseParts.get(1).equals(LOGIC_FALSE)) {
                                 Platform.runLater(() -> {
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                    alert.setTitle("Error!");
-                                    alert.setHeaderText("Opponent doesn't have enough money!!");
-                                    alert.setContentText("Opponents balance is " + responseParts.get(2));
+                                    alert.setTitle("Ошибка");
+                                    alert.setHeaderText("У оппонента не хватает денег");
+                                    alert.setContentText("Количество денег у оппонента %s".formatted(responseParts.get(2)));
                                     alert.show();
                                 });
                             } else {
                                 Platform.runLater(() -> {
                                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                                    alert.setTitle("New Game Request!");
-                                    alert.setHeaderText("%s challenged you to a match of %s %s".formatted(responseParts.get(1), responseParts.get(2), "dollars!"));
+                                    alert.setTitle("Новое приглашение в игру!");
+                                    alert.setHeaderText("%s приглашает вас в игру на %s %s".formatted(responseParts.get(1), responseParts.get(2), "монет!"));
                                     Optional<ButtonType> result = alert.showAndWait();
                                     if (result.get() == ButtonType.OK) {
                                         BilliardBattleApplication.outToServer.println(ProtocolMessageCreator.create(GAME_START, responseParts.get(1), responseParts.get(2)));
