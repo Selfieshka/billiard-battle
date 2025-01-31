@@ -3,6 +3,7 @@ package ru.kpfu.itis.kirillakhmetov.billiardbattle.server.util;
 import lombok.Getter;
 import lombok.Setter;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Player;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolMessageCreator;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.server.entity.PlayerData;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.server.service.PlayerService;
 
@@ -12,6 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProperties.*;
 
 
 public class PlayerThread implements Runnable {
@@ -41,61 +44,51 @@ public class PlayerThread implements Runnable {
             try {
                 String request = inFromClient.readLine();
                 if (request != null) {
-                    System.out.println("FROM CLIENT:" + request);
+                    System.out.println("FROM CLIENT: " + request);
 
-                    List<String> requestParts = Arrays.stream(request.split("#"))
+                    List<String> requestParts = Arrays.stream(request.split(DELIMITER))
                             .filter(val -> !val.isEmpty())
                             .toList();
 
                     switch (requestParts.getFirst()) {
-                        // Вход
-                        case "login":
+                        case AUTH_LOGIN:
                             signIn(requestParts.get(1), requestParts.get(2));
                             break;
-                        // Отправка первому игроку информации о втором игроке и старт игры
-                        case "login2":
+                        case GAME_INIT:
                             if (turn) {
-                                request += "#true";
+                                request = ProtocolMessageCreator.create(request, LOGIC_TRUE);
                                 turn = false;
                             } else {
-                                request += "#false";
+                                request = ProtocolMessageCreator.create(request, LOGIC_FALSE);
                                 turn = true;
                             }
                             outToClient.println(request);
                             break;
-                        // Регистрация
-                        case "signup":
+                        case AUTH_REGISTER:
                             signUp(requestParts.get(1), requestParts.get(2), requestParts.get(3));
                             break;
-                        // Отправка активных игроков
-                        case "active":
+                        case ACTIVE_PLAYER_LIST:
                             sendActivePlayers(requestParts.get(1));
                             break;
-                        // Проверяем, может ли выбранный игрок сыграть на n-ое количество денег
-                        case "canPlay":
+                        case REQUEST_CHALLENGE:
                             sendOtherPlayer(requestParts.get(1), Integer.parseInt(requestParts.get(2)));
                             break;
-                        // Отмена приглашения в игру
-                        case "reject":
+                        case CANCEL_INVITE:
                             for (PlayerThread playerThread : playerThreads) {
                                 if (playerThread.getThisPlayer().getName().equals(requestParts.get(1))) {
                                     playerThread.getOutToMyClient().println(request);
                                 }
                             }
                             break;
-                        // Устанавливаем соединения между двумя игроками
-                        case "play":
+                        case GAME_START:
                             setupGameSession(requestParts.get(1), Integer.parseInt(requestParts.get(2)));
                             break;
-                        // Окончание игры
-                        case "W":
+                        case GAME_END:
                             updateMoneyAfterEndGame(requestParts.get(1), requestParts.get(2), Integer.parseInt(requestParts.get(3)));
                             break;
-                        // Выход из аккаунта
-                        case "logout":
+                        case LOGOUT:
                             thisPlayer.setLoggedIn(false);
                             break;
-                        // Некорректный запрос отправляем обратно
                         default:
                             outToClient.println(request);
                     }
@@ -113,8 +106,10 @@ public class PlayerThread implements Runnable {
                 playerThread.setOutToClient(outToMyClient);
                 thisPlayer.setPlaying(true);
                 playerThread.getThisPlayer().setPlaying(true);
-                outToMyClient.println("login2#" + opponent + "#" + playerThread.getThisPlayer().getFbID() + "#" + bet + "#true");
-                outToClient.println("login2#" + thisPlayer.getName() + "#" + thisPlayer.getFbID() + "#" + bet + "#false");
+                outToMyClient.println(ProtocolMessageCreator.create(
+                        GAME_INIT, opponent, playerThread.getThisPlayer().getFbID(), bet, LOGIC_TRUE));
+                outToClient.println(ProtocolMessageCreator.create(
+                        GAME_INIT, thisPlayer.getName(), thisPlayer.getFbID(), bet, LOGIC_FALSE));
                 break;
             }
         }
@@ -125,18 +120,17 @@ public class PlayerThread implements Runnable {
         if (playerFromDb.isPresent()) {
             Player player = playerFromDb.get();
             if (player.getBalance() < money) {
-                outToMyClient.println("canPlay#false#" + money);
+                outToMyClient.println(ProtocolMessageCreator.create(REQUEST_CHALLENGE, LOGIC_FALSE, money));
             } else {
                 for (PlayerThread playerThread : playerThreads) {
                     if (playerThread.getThisPlayer().getName().equals(name) && playerThread.getThisPlayer().isLoggedIn()) {
-                        System.out.println("canPlay#" + thisPlayer.getName() + "#" + money);
-                        playerThread.getOutToMyClient().println("canPlay#" + thisPlayer.getName() + "#" + money);
+                        playerThread.getOutToMyClient().println(ProtocolMessageCreator.create(REQUEST_CHALLENGE, thisPlayer.getName(), money));
                         break;
                     }
                 }
             }
         } else {
-            outToMyClient.println("canPlay#false#" + money);
+            outToMyClient.println(ProtocolMessageCreator.create(REQUEST_CHALLENGE, LOGIC_FALSE, money));
         }
     }
 
@@ -144,7 +138,7 @@ public class PlayerThread implements Runnable {
         outToMyClient.println("startActive#");
         for (PlayerThread playerThread : playerThreads) {
             if (playerThread.getThisPlayer().isLoggedIn() && !playerThread.getThisPlayer().getName().equals(username) && !playerThread.getThisPlayer().isPlaying()) {
-                outToMyClient.println("active#" + playerThread.getThisPlayer().getName());
+                outToMyClient.println(ProtocolMessageCreator.create(ACTIVE_PLAYER_LIST, playerThread.getThisPlayer().getName()));
             }
         }
         outToMyClient.println("#endActive");
@@ -163,7 +157,7 @@ public class PlayerThread implements Runnable {
     private void signIn(String username, String password) {
         for (PlayerThread playerThread : playerThreads) {
             if (playerThread.getThisPlayer().getName().equals(username) && playerThread.getThisPlayer().isLoggedIn()) {
-                outToMyClient.println("login#false#onno");
+                outToMyClient.println(ProtocolMessageCreator.create(AUTH_LOGIN, LOGIC_FALSE));
                 return;
             }
         }
@@ -179,10 +173,11 @@ public class PlayerThread implements Runnable {
                         .money(player.getBalance())
                         .loggedIn(true)
                         .build();
-                outToMyClient.println("login#" + player.getUsername() + "#" + 0 + "#" + player.getBalance());
+                outToMyClient.println(ProtocolMessageCreator.create(
+                        AUTH_LOGIN, player.getUsername(), 0, player.getBalance()));
             }
         } else {
-            outToMyClient.println("login#false");
+            outToMyClient.println(ProtocolMessageCreator.create(AUTH_LOGIN, LOGIC_FALSE));
         }
     }
 
@@ -190,9 +185,9 @@ public class PlayerThread implements Runnable {
         Optional<Player> playerFromDb = playerService.getByName(username);
         if (playerFromDb.isEmpty()) {
             playerService.signUp(username, password);
-            outToMyClient.println("signup#true");
+            outToMyClient.println(ProtocolMessageCreator.create(AUTH_REGISTER, LOGIC_TRUE));
         } else {
-            outToMyClient.println("signup#false");
+            outToMyClient.println(ProtocolMessageCreator.create(AUTH_REGISTER, LOGIC_TRUE));
         }
     }
 

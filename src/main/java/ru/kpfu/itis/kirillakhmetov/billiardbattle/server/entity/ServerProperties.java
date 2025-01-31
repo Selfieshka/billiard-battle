@@ -7,5 +7,4 @@ import lombok.NoArgsConstructor;
 public class ServerProperties {
     public static final String HOST = "localhost";
     public static final int PORT = 5123;
-    public static final String SEPARATOR = "#";
 }

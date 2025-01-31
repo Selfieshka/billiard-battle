@@ -7,9 +7,6 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 import java.util.Objects;
 

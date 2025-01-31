@@ -11,6 +11,7 @@ import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.controller.GameControll
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.controller.OnlinePlayersController;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Vector;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene.GameScene;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolMessageCreator;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,6 +19,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProperties.*;
 
 public class ClientThread implements Runnable {
     private final BufferedReader inFromServer;
@@ -35,42 +38,42 @@ public class ClientThread implements Runnable {
                 if (response != null) {
                     System.out.println("FROM SERVER: " + response);
 
-                    List<String> responseParts = Arrays.stream(response.split("#"))
+                    List<String> responseParts = Arrays.stream(response.split(DELIMITER))
                             .filter(val -> !val.isEmpty())
                             .toList();
 
                     switch (responseParts.getFirst()) {
-                        case "V":
+                        case SHOT_VELOCITY:
                             GameScene.getBalls()[0].setVelocity(
                                     Double.parseDouble(responseParts.get(1)),
                                     Double.parseDouble(responseParts.get(2))
                             );
                             break;
-                        case "st":
+                        case CUE_ROTATE:
                             gameController.stick.setVisible(true);
                             gameController.stick.setRotate(Double.parseDouble(responseParts.get(1)));
                             gameController.stick.setLayoutX(Double.parseDouble(responseParts.get(2)));
                             gameController.stick.setLayoutY(Double.parseDouble(responseParts.get(3)));
                             break;
-                        case "stf":
+                        case PLAYER_HIT:
                             gameController.stick.setVisible(false);
                             break;
-                        case "M":
+                        case BALL_MOVE:
                             GameScene.getBalls()[0].setPosition(new Vector(
                                     Double.parseDouble(responseParts.get(1)),
                                     Double.parseDouble(responseParts.get(2))
                             ));
                             break;
-                        case "Lt":
+                        case TECH_LOSE:
                             GameScene.getPlayer1().setWin(true);
                             GameScene.getPlayer2().setWin(false);
                             GameScene.setGameOver(true);
                             break;
-                        case "login2":
+                        case GAME_INIT:
                             GameScene.getPlayer2().setUsername(responseParts.get(1));
                             GameScene.getPlayer2().setId(responseParts.get(2));
                             GameScene.setBet(Integer.parseInt(responseParts.get(3)));
-                            if (responseParts.get(4).equals("true")) {
+                            if (responseParts.get(4).equals(LOGIC_TRUE)) {
                                 GameScene.getPlayer2().setMyTurn(false);
                                 GameScene.getPlayer1().setMyTurn(true);
                             } else {
@@ -85,8 +88,8 @@ public class ClientThread implements Runnable {
                                 }
                             });
                             break;
-                        case "login":
-                            if (responseParts.get(1).equals("false")) {
+                        case AUTH_LOGIN:
+                            if (responseParts.get(1).equals(LOGIC_FALSE)) {
                                 if (responseParts.size() > 2) {
                                     Platform.runLater(() -> {
                                         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -121,8 +124,8 @@ public class ClientThread implements Runnable {
                                 GameScene.getPlayer1().setBalance(Integer.parseInt(responseParts.get(3)));
                             }
                             break;
-                        case "signup":
-                            if (responseParts.get(1).equals("true")) {
+                        case AUTH_REGISTER:
+                            if (responseParts.get(1).equals(LOGIC_TRUE)) {
                                 Platform.runLater(() -> {
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                                     alert.setTitle("Welcome");
@@ -142,7 +145,7 @@ public class ClientThread implements Runnable {
                         case "startActive":
                             OnlinePlayersController.strings = FXCollections.observableArrayList();
                             break;
-                        case "active":
+                        case ACTIVE_PLAYER_LIST:
                             OnlinePlayersController.strings.add(responseParts.get(1));
                             break;
                         case "endActive":
@@ -159,8 +162,8 @@ public class ClientThread implements Runnable {
                                 }
                             });
                             break;
-                        case "canPlay":
-                            if (responseParts.get(1).equals("false")) {
+                        case REQUEST_CHALLENGE:
+                            if (responseParts.get(1).equals(LOGIC_FALSE)) {
                                 Platform.runLater(() -> {
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                                     alert.setTitle("Error!");
@@ -175,14 +178,14 @@ public class ClientThread implements Runnable {
                                     alert.setHeaderText("%s challenged you to a match of %s %s".formatted(responseParts.get(1), responseParts.get(2), "dollars!"));
                                     Optional<ButtonType> result = alert.showAndWait();
                                     if (result.get() == ButtonType.OK) {
-                                        BilliardBattleApplication.outToServer.println("play#%s%s%s".formatted(responseParts.get(1), "#", responseParts.get(2)));
+                                        BilliardBattleApplication.outToServer.println(ProtocolMessageCreator.create(GAME_START, responseParts.get(1), responseParts.get(2)));
                                     } else {
-                                        BilliardBattleApplication.outToServer.println("reject#%s".formatted(responseParts.get(1)));
+                                        BilliardBattleApplication.outToServer.println(ProtocolMessageCreator.create(CANCEL_INVITE, responseParts.get(1)));
                                     }
                                 });
                             }
                             break;
-                        case "reject":
+                        case CANCEL_INVITE:
                             Platform.runLater(() -> {
                                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                                 alert.setTitle("Ошибка!");

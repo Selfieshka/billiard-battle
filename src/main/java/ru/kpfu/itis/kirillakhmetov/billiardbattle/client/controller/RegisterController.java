@@ -7,9 +7,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.BilliardBattleApplication;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolMessageCreator;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProperties.AUTH_REGISTER;
 
 public class RegisterController implements Initializable {
     @FXML
@@ -36,7 +39,8 @@ public class RegisterController implements Initializable {
                 alert.show();
             } else {
                 if (!username.getText().isEmpty() && !password.getText().isEmpty()) {
-                    BilliardBattleApplication.outToServer.println("signup#" + username.getText() + "#" + password.getText() + "#" + 0);
+                    BilliardBattleApplication.outToServer.println(ProtocolMessageCreator.create(
+                            AUTH_REGISTER, username.getText(), password.getText(), 0));
                     username.setText("");
                     password.setText("");
                     repassword.setText("");

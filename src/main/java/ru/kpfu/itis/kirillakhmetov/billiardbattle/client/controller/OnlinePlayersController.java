@@ -6,9 +6,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.BilliardBattleApplication;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene.GameScene;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolMessageCreator;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProperties.REQUEST_CHALLENGE;
 
 public class OnlinePlayersController implements Initializable {
     @FXML
@@ -43,7 +46,8 @@ public class OnlinePlayersController implements Initializable {
                 alert.setHeaderText("Не хватает денег");
                 alert.show();
             } else {
-                BilliardBattleApplication.outToServer.println("canPlay#" + active.getSelectionModel().getSelectedItem() + "#" + money.getText());
+                BilliardBattleApplication.outToServer.println(ProtocolMessageCreator.create(
+                        REQUEST_CHALLENGE, active.getSelectionModel().getSelectedItem(), money.getText()));
             }
         });
     }

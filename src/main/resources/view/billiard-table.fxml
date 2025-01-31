@@ -400,7 +400,7 @@
             </stroke>
         </Rectangle>
         <Slider fx:id="velocitySlider" layoutX="25.0" layoutY="230.0" max="30.0" onMouseClicked="#showVelocity"
-                onMouseDragEntered="#showVelocity" onMouseDragged="#showVelocity" onMouseReleased="#mereDaw"
+                onMouseDragEntered="#showVelocity" onMouseDragged="#showVelocity" onMouseReleased="#hitCueBall"
                 orientation="VERTICAL" prefHeight="392.0" prefWidth="30.0" rotate="180.0">
             <cursor>
                 <Cursor fx:constant="HAND"/>

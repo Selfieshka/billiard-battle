@@ -4,7 +4,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17" prefHeight="700.0" prefWidth="1100.0"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17" prefHeight="700.0"
+            prefWidth="1100.0"
             style="-fx-background-color: transparent;"
             fx:controller="ru.kpfu.itis.kirillakhmetov.billiardbattle.client.controller.MenuController">
     <padding>

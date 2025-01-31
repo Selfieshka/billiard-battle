@@ -21,6 +21,9 @@ import java.net.Socket;
 import java.util.Objects;
 import java.util.Optional;
 
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProperties.LOGOUT;
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProperties.TECH_LOSE;
+
 
 public class BilliardBattleApplication extends Application {
     public static Stage window;
@@ -88,8 +91,8 @@ public class BilliardBattleApplication extends Application {
                     GameScene.getPlayer2().setWin(true);
                     GameScene.getPlayer1().setWin(false);
                     GameScene.setGameOver(true);
-                    outToServer.println("Lt");
-                    outToServer.println("logout");
+                    outToServer.println(TECH_LOSE);
+                    outToServer.println(LOGOUT);
                     closeAllResources();
                 }
             } else {
@@ -100,7 +103,7 @@ public class BilliardBattleApplication extends Application {
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.get() == ButtonType.OK) {
                     if (window.getScene() != login) {
-                        outToServer.println("logout");
+                        outToServer.println(LOGOUT);
                     }
                     closeAllResources();
                 }

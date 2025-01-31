@@ -13,11 +13,14 @@ import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.BilliardBattleApplicati
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Ball;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Vector;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene.GameScene;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolMessageCreator;
 
 import java.util.Objects;
 
 import static ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.GameParameters.BALL_RADIUS;
 import static ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.GameParameters.CUE_BALL_VELOCITY;
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProperties.CUE_ROTATE;
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProperties.PLAYER_HIT;
 
 
 public class GameController {
@@ -143,9 +146,8 @@ public class GameController {
             double y = event.getSceneY();
             xp = x;
             yp = y;
-            BilliardBattleApplication.outToServer.println("st#" + (int) stick.getRotate()
-                    + "#" + (int) stick.getLayoutX()
-                    + "#" + (int) stick.getLayoutY());
+            BilliardBattleApplication.outToServer.println(ProtocolMessageCreator.create(
+                    CUE_ROTATE, (int) stick.getRotate(), (int) stick.getLayoutX(), (int) stick.getLayoutY()));
         }
     }
 
@@ -169,7 +171,7 @@ public class GameController {
         }
     }
 
-    public void mereDaw() {
+    public void hitCueBall() {
         double cueBallVelocity;
         if (GameScene.isTurn() && !GameScene.isGameOver() && xp != -1 && yp != -1 && !GameScene.isGamePause() && GameScene.getPlayer1().isMyTurn()) {
             cueBallVelocity = velocitySlider.getValue();
@@ -186,7 +188,7 @@ public class GameController {
                 xp = -1;
                 yp = -1;
                 stick.setVisible(false);
-                BilliardBattleApplication.outToServer.println("stf");
+                BilliardBattleApplication.outToServer.println(PLAYER_HIT);
                 predictedLine.setVisible(false);
             }
         } else {

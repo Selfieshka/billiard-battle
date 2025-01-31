@@ -5,9 +5,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.BilliardBattleApplication;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene.GameScene;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolMessageCreator;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProperties.ACTIVE_PLAYER_LIST;
 
 public class MenuController implements Initializable {
     @FXML
@@ -15,8 +18,8 @@ public class MenuController implements Initializable {
 
     public void initialize(URL url, ResourceBundle rb) {
         gameButton.setOnAction(e -> {
-            BilliardBattleApplication.outToServer.println("active#" + GameScene.getPlayer1().getUsername());
-            System.out.println(1);
+            BilliardBattleApplication.outToServer.println(ProtocolMessageCreator.create(
+                    ACTIVE_PLAYER_LIST, GameScene.getPlayer1().getUsername()));
         });
     }
 }

@@ -20,11 +20,12 @@ import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.controller.GameControll
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Ball;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Player;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.entity.Vector;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolMessageCreator;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static ru.kpfu.itis.kirillakhmetov.billiardbattle.server.entity.ServerProperties.SEPARATOR;
+import static ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol.ProtocolProperties.*;
 
 
 public class GameScene {
@@ -176,7 +177,7 @@ public class GameScene {
 
     public static void setVelocity(double x, double y) {
         balls[0].setVelocity(x, y);
-        BilliardBattleApplication.outToServer.println("V%s%s%s%s".formatted(SEPARATOR, x, SEPARATOR, y));
+        BilliardBattleApplication.outToServer.println(ProtocolMessageCreator.create(SHOT_VELOCITY, x, y));
     }
 
     private void reInitialize() {
@@ -313,7 +314,7 @@ public class GameScene {
                 gameOver = true;
                 window.setScene(menu);
                 reInitialize();
-                BilliardBattleApplication.outToServer.println("Lt");
+                BilliardBattleApplication.outToServer.println(TECH_LOSE);
             }
         }
     }
@@ -422,7 +423,8 @@ public class GameScene {
                 balls[0].getSphere().setCursor(Cursor.CLOSED_HAND);
                 if ((event.getSceneX() <= 937 && event.getSceneX() >= 157) && (event.getSceneY() >= 180 && event.getSceneY() <= 568)) {
                     balls[0].setPosition(new Vector(event.getSceneX(), event.getSceneY()));
-                    BilliardBattleApplication.outToServer.println("M%s%s%s%s".formatted(SEPARATOR, event.getSceneX(), SEPARATOR, event.getSceneY()));
+                    BilliardBattleApplication.outToServer.println(
+                            ProtocolMessageCreator.create(BALL_MOVE, event.getSceneX(), event.getSceneY()));
                 }
 
             } else if (isTurn && turnNum == 1 && player1.isMyTurn()) {
@@ -433,7 +435,8 @@ public class GameScene {
                 balls[0].getSphere().setCursor(Cursor.CLOSED_HAND);
                 if ((event.getSceneX() <= 344 && event.getSceneX() >= 155) && (event.getSceneY() >= 170 && event.getSceneY() <= 570)) {
                     balls[0].setPosition(new Vector(event.getSceneX(), event.getSceneY()));
-                    BilliardBattleApplication.outToServer.println("M%s%s%s%s".formatted(SEPARATOR, event.getSceneX(), SEPARATOR, event.getSceneY()));
+                    BilliardBattleApplication.outToServer.println(
+                            ProtocolMessageCreator.create(BALL_MOVE, event.getSceneX(), event.getSceneY()));
                 }
             }
         });
@@ -644,7 +647,10 @@ public class GameScene {
         labelForPressAnyKey.getStyleClass().add("label-over");
         if (GameScene.getPlayer1().isWin()) {
             player1.setBalance(player1.getBalance() + bet);
-            BilliardBattleApplication.outToServer.println("W%s%s%s%s%s%s".formatted(SEPARATOR, GameScene.getPlayer1().getUsername(), SEPARATOR, GameScene.getPlayer2().getUsername(), SEPARATOR, bet));
+            BilliardBattleApplication.outToServer.println(ProtocolMessageCreator.create(
+                    GAME_END, GameScene.getPlayer1().getUsername(),
+                    GameScene.getPlayer2().getUsername(), bet)
+            );
         } else {
             player1.setBalance(player1.getBalance() - bet);
         }
