@@ -13,8 +13,9 @@ module ru.kpfu.itis.kirillakhmetov.billiardbattle {
     exports ru.kpfu.itis.kirillakhmetov.billiardbattle.server;
     exports ru.kpfu.itis.kirillakhmetov.billiardbattle.server.entity;
     exports ru.kpfu.itis.kirillakhmetov.billiardbattle.server.util;
-    exports ru.kpfu.itis.kirillakhmetov.billiardbattle.client.util;
     exports ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol;
+    exports ru.kpfu.itis.kirillakhmetov.billiardbattle.server.thread;
+    exports ru.kpfu.itis.kirillakhmetov.billiardbattle.client.thread;
 
     opens view to javafx.fxml;
     opens ru.kpfu.itis.kirillakhmetov.billiardbattle.client.controller to javafx.fxml;
@@ -24,4 +25,5 @@ module ru.kpfu.itis.kirillakhmetov.billiardbattle {
     opens ru.kpfu.itis.kirillakhmetov.billiardbattle.server.entity to javafx.fxml;
     opens ru.kpfu.itis.kirillakhmetov.billiardbattle.server.util to javafx.fxml;
     opens ru.kpfu.itis.kirillakhmetov.billiardbattle.protocol to javafx.fxml;
+    opens ru.kpfu.itis.kirillakhmetov.billiardbattle.server.thread to javafx.fxml;
 }

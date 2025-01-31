@@ -10,7 +10,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.scene.GameScene;
-import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.util.ClientThread;
+import ru.kpfu.itis.kirillakhmetov.billiardbattle.client.thread.ClientThread;
 import ru.kpfu.itis.kirillakhmetov.billiardbattle.server.entity.ServerProperties;
 
 import java.io.BufferedReader;

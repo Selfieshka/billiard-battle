@@ -1,4 +1,4 @@
-package ru.kpfu.itis.kirillakhmetov.billiardbattle.server.util;
+package ru.kpfu.itis.kirillakhmetov.billiardbattle.server.thread;
 
 import lombok.Getter;
 import lombok.Setter;

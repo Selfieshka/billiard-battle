@@ -1,4 +1,4 @@
-package ru.kpfu.itis.kirillakhmetov.billiardbattle.client.util;
+package ru.kpfu.itis.kirillakhmetov.billiardbattle.client.thread;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
